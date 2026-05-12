@@ -10,6 +10,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -32,14 +34,23 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; 
         }
+        /* Arabic Font Utility */
+        .font-arabic {
+            font-family: 'Amiri', serif;
+        }
+        
+        /* Custom Table Spacing for better look */
+        th, td {
+            vertical-align: middle !important;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased overflow-hidden h-screen flex">
 
     <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-gray-50 z-50">
+    <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-gray-50 z-50 overflow-y-auto">
         <!-- Background Ornaments -->
-        <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div class="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
             <div class="absolute -top-[20%] -right-[10%] w-[70%] h-[70%] bg-gradient-to-br from-cyan-400 to-blue-900 rounded-full opacity-20 blur-3xl"></div>
             <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-gradient-to-tr from-yellow-400 to-transparent rounded-full opacity-20 blur-3xl"></div>
             
@@ -48,8 +59,8 @@
             </svg>
         </div>
 
-        <div class="bg-white p-10 rounded-3xl shadow-2xl z-10 w-full max-w-md border-t-8 border-blue-900">
-            <div class="text-center mb-8">
+        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-2xl z-10 w-full max-w-md border-t-8 border-blue-900 my-8">
+            <div class="text-center mb-6">
                 <h1 class="text-5xl font-extrabold text-blue-900 tracking-tighter mb-2">
                     EXOT<span class="text-cyan-500">2026</span>
                 </h1>
@@ -59,14 +70,14 @@
                 </div>
             </div>
 
-            <form id="login-form" class="space-y-6">
+            <form id="login-form" class="space-y-4 mb-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Examiner ID</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i data-lucide="user" class="h-5 w-5 text-gray-400"></i>
                         </div>
-                        <input type="text" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="Enter your ID" value="EXM-2026-001">
+                        <input type="text" id="login-id" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="Enter your ID">
                     </div>
                 </div>
                 <div>
@@ -75,13 +86,32 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i data-lucide="lock" class="h-5 w-5 text-gray-400"></i>
                         </div>
-                        <input type="password" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="••••••••" value="password123">
+                        <input type="password" id="login-pass" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="••••••••" value="password123">
                     </div>
                 </div>
                 <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg flex justify-center items-center gap-2">
-                    Masuk ke Portal Penilaian
+                    Masuk
                 </button>
             </form>
+
+            <!-- DUMMY LOGIN BUTTONS UNTUK TESTING -->
+            <div class="pt-6 border-t border-gray-100">
+                <p class="text-xs text-gray-500 text-center mb-3 font-medium uppercase tracking-wider">Pilih Role Penguji (Testing)</p>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="quickLogin('arabic')" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-sm font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-between">
+                        <span>Syeikh Abdulhameed</span>
+                        <span class="text-xs bg-emerald-200 px-2 py-0.5 rounded text-emerald-900">Mapel: Arabic</span>
+                    </button>
+                    <button onclick="quickLogin('quran')" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-sm font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-between">
+                        <span>Syeikhoh Manal</span>
+                        <span class="text-xs bg-purple-200 px-2 py-0.5 rounded text-purple-900">Mapel: Al-Qur'an</span>
+                    </button>
+                    <button onclick="quickLogin('english')" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-sm font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-between">
+                        <span>Professional Teacher</span>
+                        <span class="text-xs bg-rose-200 px-2 py-0.5 rounded text-rose-900">Mapel: English</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -115,10 +145,10 @@
 
             <div class="p-4 border-t border-blue-800">
                 <div class="flex items-center gap-3 mb-4 px-2">
-                    <div class="w-10 h-10 rounded-full bg-blue-700 flex justify-center items-center font-bold">AY</div>
+                    <div class="w-10 h-10 rounded-full bg-blue-700 flex justify-center items-center font-bold text-xs" id="info-sidebar-initial">EX</div>
                     <div class="overflow-hidden">
-                        <p class="text-sm font-bold truncate">Abdulhameed Y.</p>
-                        <p class="text-xs text-blue-300 truncate" id="info-sidebar-room">Examiner</p>
+                        <p class="text-sm font-bold truncate" id="info-sidebar-name">Examiner Name</p>
+                        <p class="text-xs text-blue-300 truncate" id="info-sidebar-room">Room 01</p>
                     </div>
                 </div>
                 <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-950 hover:bg-red-600 hover:text-white text-blue-300 rounded-lg transition-colors text-sm font-medium">
@@ -130,7 +160,7 @@
 
         <!-- MAIN CONTENT -->
         <main class="flex-grow p-4 md:p-8 overflow-y-auto w-full">
-            <div class="max-w-6xl mx-auto h-full relative">
+            <div class="max-w-[1400px] mx-auto h-full relative">
                 
                 <!-- HOME TAB -->
                 <div id="tab-home" class="animate-fadeIn space-y-6 block">
@@ -262,16 +292,8 @@
                         <div class="overflow-x-auto p-0 flex-grow">
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-gray-50 z-10 shadow-sm">
-                                    <tr class="text-gray-700 text-sm uppercase tracking-wider border-b-2 border-gray-200">
-                                        <th class="p-4 font-bold w-12 text-center">No</th>
-                                        <th class="p-4 font-bold">Nama Siswa</th>
-                                        <th class="p-4 font-bold text-center border-l border-gray-200">Sesi</th>
-                                        <th class="p-4 font-bold text-center border-l border-gray-200">Grading Siswa</th>
-                                        <th class="p-4 font-bold text-center border-l border-gray-200 bg-blue-50/50">Kelancaran<br><span class="text-[10px] text-gray-500">(Fluency)</span></th>
-                                        <th class="p-4 font-bold text-center border-l border-gray-200 bg-blue-50/50">Ketepatan<br><span class="text-[10px] text-gray-500">(Accuracy)</span></th>
-                                        <th class="p-4 font-bold text-center border-l border-gray-200 bg-blue-50/50">Pengucapan<br><span class="text-[10px] text-gray-500">(Pronunciation)</span></th>
-                                        <th class="p-4 font-bold text-center border-l-2 border-gray-200">Rata-rata</th>
-                                        <th class="p-4 font-bold text-center">Predikat</th>
+                                    <tr id="table-header-row" class="text-gray-700 text-sm uppercase tracking-wider border-b-2 border-gray-200">
+                                        <!-- Di-inject otomatis lewat JS supaya lebar proporsional & dinamis -->
                                     </tr>
                                 </thead>
                                 <tbody id="students-table-body" class="divide-y divide-gray-100">
@@ -280,7 +302,7 @@
                             </table>
                         </div>
                         <div class="p-4 border-t bg-gray-50 flex justify-end flex-shrink-0">
-                            <button onclick="alert('Fitur submit akan dihubungkan ke backend database!')" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+                            <button onclick="alert('Fitur submit akan dihubungkan ke backend database/App Script!')" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
                                 <i data-lucide="check-circle" class="w-5 h-5"></i>
                                 Simpan & Kirim Penilaian
                             </button>
@@ -294,49 +316,113 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- MOCK DATA ---
-        // Data ini nanti bisa diganti lewat integrasi App Script
-        const EXAMINER_DATA = {
-            name: "Syeikh Prof. Dr. Abdulhameed Al-Yamani",
-            role: "Native Arabic",
-            date: "Minggu, 24 Mei 2026",
-            branch: "Al-Wildan Islamic School 15 Bekasi",
-            room: "Ruang Ujian 01",
-            subject: "Arabic Language - Oral Exam",
-            arrivalTime: null, // Null = belum hadir, "06:45 WIB" = hadir
-        };
+        // ==========================================
+        // 1. DATA MASTER & STRUKTUR UNTUK APP SCRIPT
+        // ==========================================
 
-        const RUBRICS = ['r1', 'r2', 'r3'];
-
-        // STATE
-        let state = {
-            students: [
-                { id: 1, name: "Ahmad Fathanah", sesi: "Sesi 1", grading: "Excellent 1", scores: { r1: null, r2: null, r3: null } },
-                { id: 2, name: "Aisyah Putri", sesi: "Sesi 1", grading: "Excellent 2", scores: { r1: null, r2: null, r3: null } },
-                { id: 3, name: "Bima Arya", sesi: "Sesi 1", grading: "Excellent 3", scores: { r1: null, r2: null, r3: null } },
-                { id: 4, name: "Cut Mutia", sesi: "Sesi 2", grading: "Excellent 4", scores: { r1: null, r2: null, r3: null } },
-                { id: 5, name: "Daffa Ramadhan", sesi: "Sesi 2", grading: "Excellent 1", scores: { r1: null, r2: null, r3: null } },
-                { id: 6, name: "Eka Sari", sesi: "Sesi 2", grading: "Excellent 2", scores: { r1: null, r2: null, r3: null } },
+        const RUBRIC_TEMPLATES = {
+            english: [
+                { key: 'fluency', label: 'Fluency' },
+                { key: 'pronunciation', label: 'Pronunciation' },
+                { key: 'vocabulary', label: 'Vocabulary' },
+                { key: 'clarity', label: 'Clarity' }
+            ],
+            quran: [
+                { key: 'sikap', label: 'SIKAP', arabic: 'الأداء' },
+                { key: 'tajwid', label: 'TAJWID', arabic: 'التجويد' },
+                { key: 'makhraj', label: 'MAKHRAJ', arabic: 'المخرج' },
+                { key: 'sifat', label: 'SIFAT', arabic: 'الصفة' },
+                { key: 'kelancaran', label: 'KELANCARAN', arabic: 'الحفظ' }
+            ],
+            arabic: [
+                { key: 'qiraah', label: 'Maharah Qira\'ah', arabic: 'مهارة القراءة' },
+                { key: 'kalam', label: 'Maharah Kalam', arabic: 'مهارة الكلام' },
+                { key: 'ada', label: 'Ada\' (Sikap)', arabic: 'الأداء' }
             ]
         };
 
-        // --- HELPER FUNCTIONS ---
+        const MOCK_EXAMINERS = {
+            arabic: {
+                id: 'EXM-ARABIC',
+                name: "Syeikh Prof. Dr. Abdulhameed Al-Yamani",
+                role: "Native Arabic",
+                date: "Minggu, 24 Mei 2026",
+                branch: "Al-Wildan Islamic School 15 Bekasi",
+                room: "Ruang Ujian 01",
+                subject: "Arabic Language - Oral Exam",
+                type: "arabic",
+                arrivalTime: "06:45 WIB", // Sudah hadir
+            },
+            quran: {
+                id: 'EXM-QURAN',
+                name: "Syeikhoh Manal Al-Yamani",
+                role: "Native Al-Qur'an",
+                date: "Minggu, 24 Mei 2026",
+                branch: "Al-Wildan Islamic School 15 Bekasi",
+                room: "Ruang Ujian 02",
+                subject: "Al-Qur'an Recitation",
+                type: "quran",
+                arrivalTime: null, // Belum hadir
+            },
+            english: {
+                id: 'EXM-ENG',
+                name: "Mr. Ahmad Fadhil",
+                role: "Professional Teacher",
+                date: "Minggu, 24 Mei 2026",
+                branch: "Al-Wildan Islamic School 15 Bekasi",
+                room: "Ruang Ujian 03",
+                subject: "English Language",
+                type: "english",
+                arrivalTime: "06:50 WIB", // Sudah hadir
+            }
+        };
+
+        // Template function untuk membuat data murid kosong sesuai dengan mapel penguji
+        const generateEmptyScores = (type) => {
+            let scores = {};
+            RUBRIC_TEMPLATES[type].forEach(r => { scores[r.key] = null; });
+            return scores;
+        };
+
+        const generateStudentsFor = (type) => {
+            return [
+                { id: 1, name: "Ahmad Fathanah", sesi: "Sesi 1", grading: "Excellent 1", scores: generateEmptyScores(type) },
+                { id: 2, name: "Aisyah Putri", sesi: "Sesi 1", grading: "Excellent 2", scores: generateEmptyScores(type) },
+                { id: 3, name: "Bima Arya", sesi: "Sesi 1", grading: "Excellent 3", scores: generateEmptyScores(type) },
+                { id: 4, name: "Cut Mutia", sesi: "Sesi 2", grading: "Excellent 4", scores: generateEmptyScores(type) },
+                { id: 5, name: "Daffa Ramadhan", sesi: "Sesi 2", grading: "Excellent 1", scores: generateEmptyScores(type) },
+                { id: 6, name: "Eka Sari", sesi: "Sesi 2", grading: "Excellent 2", scores: generateEmptyScores(type) },
+            ];
+        };
+
+        // STATE APLIKASI
+        let state = {
+            currentExaminer: null,
+            students: []
+        };
+
+
+        // ==========================================
+        // 2. HELPER LOGIC PENILAIAN
+        // ==========================================
+
         const getGradingRange = (grading) => {
             switch (grading) {
                 case "Excellent 1": return { min: 95, max: 100 };
                 case "Excellent 2": return { min: 93, max: 97 };
                 case "Excellent 3": return { min: 90, max: 95 };
-                case "Excellent 4": return { min: 85, max: 90 }; // Ralat Excellent 4 ke 85 - 90
+                case "Excellent 4": return { min: 85, max: 90 };
                 default: return { min: 0, max: 100 };
             }
         };
 
         const getBadgeStyle = (grading) => {
+            // Menggunakan warna solid yang persis sesuai gambar referensi Excellent
             switch (grading) {
-                case "Excellent 1": return "bg-blue-100 text-blue-800 border-blue-200";
-                case "Excellent 2": return "bg-cyan-100 text-cyan-800 border-cyan-200";
-                case "Excellent 3": return "bg-green-100 text-green-800 border-green-200";
-                case "Excellent 4": return "bg-yellow-100 text-yellow-800 border-yellow-200";
+                case "Excellent 1": return "bg-[#00FF00] text-black border border-black/20 shadow-sm"; 
+                case "Excellent 2": return "bg-[#4A86E8] text-white border border-black/20 shadow-sm"; 
+                case "Excellent 3": return "bg-[#FF9900] text-black border border-black/20 shadow-sm"; 
+                case "Excellent 4": return "bg-[#B7B7B7] text-black border border-black/20 shadow-sm"; 
                 default: return "bg-gray-100 text-gray-800 border-gray-200";
             }
         };
@@ -352,28 +438,35 @@
             if (average === null) return "-";
             const num = parseFloat(average);
             if (num >= 90) return "A";
-            if (num >= 85) return "B"; // Ralat Predikat B dari 87 ke 85
+            if (num >= 85) return "B";
             return "C";
         };
 
-        // --- UI UPDATERS ---
+
+        // ==========================================
+        // 3. UI RENDERING & UPDATES
+        // ==========================================
 
         function updateDashboardInfo() {
-            document.getElementById('info-name').innerText = EXAMINER_DATA.name;
-            document.getElementById('info-subject').innerText = EXAMINER_DATA.subject;
-            document.getElementById('info-role').innerText = EXAMINER_DATA.role;
-            document.getElementById('info-date').innerText = EXAMINER_DATA.date;
-            document.getElementById('info-branch').innerText = EXAMINER_DATA.branch;
-            document.getElementById('info-room').innerText = EXAMINER_DATA.room;
-            document.getElementById('info-sidebar-room').innerText = EXAMINER_DATA.room;
+            const data = state.currentExaminer;
+            document.getElementById('info-name').innerText = data.name;
+            document.getElementById('info-subject').innerText = data.subject;
+            document.getElementById('info-role').innerText = data.role;
+            document.getElementById('info-date').innerText = data.date;
+            document.getElementById('info-branch').innerText = data.branch;
+            document.getElementById('info-room').innerText = data.room;
+            
+            // Sidebar Info
+            document.getElementById('info-sidebar-name').innerText = data.name.split(' ').slice(0,2).join(' ');
+            document.getElementById('info-sidebar-room').innerText = data.room;
+            document.getElementById('info-sidebar-initial').innerText = data.name.substring(0, 2).toUpperCase();
 
             // Logic Kedatangan dan Status Active/Inactive
             const timeEl = document.getElementById('info-time');
             const statusBadgeEl = document.getElementById('status-badge');
 
-            if (EXAMINER_DATA.arrivalTime) {
-                // Hadir
-                timeEl.innerText = EXAMINER_DATA.arrivalTime;
+            if (data.arrivalTime) {
+                timeEl.innerText = data.arrivalTime;
                 timeEl.className = "font-bold text-green-600";
                 statusBadgeEl.innerHTML = `
                     <span class="block text-xs uppercase tracking-wider text-cyan-200 mb-1">Status</span>
@@ -382,7 +475,6 @@
                     </span>
                 `;
             } else {
-                // Belum Hadir
                 timeEl.innerText = "Belum Hadir";
                 timeEl.className = "font-bold text-red-500";
                 statusBadgeEl.innerHTML = `
@@ -400,14 +492,12 @@
             const pendingStudents = totalStudents - gradedStudents;
             const progressPercentage = totalStudents === 0 ? 0 : Math.round((gradedStudents / totalStudents) * 100);
 
-            // Update texts
             document.getElementById('stat-total').innerText = totalStudents;
             document.getElementById('stat-completed').innerText = gradedStudents;
             document.getElementById('stat-percentage').innerText = `${progressPercentage}%`;
             document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
             document.getElementById('stat-big-pending').innerText = pendingStudents;
 
-            // Alert logic
             const alertBox = document.getElementById('alert-box');
             const successBox = document.getElementById('success-box');
             
@@ -420,7 +510,6 @@
                 successBox.classList.remove('hidden');
             }
 
-            // Sidebar badge
             const badge = document.getElementById('nav-pending-badge');
             if (pendingStudents > 0) {
                 badge.innerText = pendingStudents;
@@ -430,22 +519,57 @@
             }
         }
 
+        // Render Table Header (Dinamis proporsional)
+        function renderTableHeader() {
+            const theadTr = document.getElementById('table-header-row');
+            const rubrics = RUBRIC_TEMPLATES[state.currentExaminer.type];
+            
+            let thHTML = `
+                <th class="p-4 font-bold text-left min-w-[180px]">Nama Siswa</th>
+                <th class="p-4 font-bold text-center border-l border-gray-200 w-24">Sesi</th>
+                <th class="p-4 font-bold text-center border-l border-gray-200 w-36">Grading Siswa</th>
+            `;
+            
+            // Kolom rubrik proporsional
+            rubrics.forEach(r => {
+                thHTML += `
+                    <th class="p-4 font-bold text-center border-l border-gray-200 bg-blue-50/50 min-w-[120px]">
+                        <div class="flex flex-col items-center justify-center gap-0.5">
+                            ${r.arabic ? `<span class="text-xl font-bold font-arabic tracking-wide text-blue-900">${r.arabic}</span>` : ''}
+                            <span class="${r.arabic ? 'text-[10px] text-gray-500 font-medium' : 'uppercase text-gray-700'}">${r.label}</span>
+                        </div>
+                    </th>
+                `;
+            });
+            
+            thHTML += `
+                <th class="p-4 font-bold text-center border-l-2 border-gray-200 w-28">Rata-rata</th>
+                <th class="p-4 font-bold text-center w-28">Predikat</th>
+            `;
+            
+            theadTr.innerHTML = thHTML;
+        }
+
+        // Render Isi Tabel
         function renderTable() {
+            renderTableHeader(); // Pastikan header selalu dirender ulang sesuai state mapel
+            
             const tbody = document.getElementById('students-table-body');
             const filterSesi = document.getElementById('filter-sesi').value;
             tbody.innerHTML = '';
 
-            // Filter logic
             const filteredStudents = state.students.filter(student => 
                 filterSesi === 'all' || student.sesi === filterSesi
             );
 
             if (filteredStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-gray-500 font-medium">Tidak ada data siswa untuk sesi ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-gray-500 font-medium">Tidak ada data siswa untuk sesi ini.</td></tr>`;
                 return;
             }
 
-            filteredStudents.forEach((student, index) => {
+            const rubrics = RUBRIC_TEMPLATES[state.currentExaminer.type];
+
+            filteredStudents.forEach((student) => {
                 const { min, max } = getGradingRange(student.grading);
                 const avg = calculateAverage(student.scores);
                 const predicate = getPredicate(avg);
@@ -454,32 +578,31 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors";
                 
+                // Kolom NO sudah dihapus, langsung mulai dari Nama Siswa
                 let tdHTML = `
-                    <td class="p-4 text-center text-gray-500 font-medium">${index + 1}</td>
                     <td class="p-4 font-bold text-gray-900">${student.name}</td>
                     <td class="p-4 text-center border-l border-gray-100">
                         <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-bold">${student.sesi}</span>
                     </td>
                     <td class="p-4 text-center border-l border-gray-100">
-                        <span class="px-3 py-1 rounded-full text-xs font-bold border ${getBadgeStyle(student.grading)}">
+                        <div class="px-3 py-1 rounded-full text-xs font-bold ${getBadgeStyle(student.grading)}">
                             ${student.grading}
-                        </span>
+                        </div>
                         <div class="text-[10px] text-gray-400 mt-1">Range: ${min}-${max}</div>
                     </td>
                 `;
 
-                RUBRICS.forEach(rKey => {
-                    const score = student.scores[rKey];
+                // Iterasi Rubrik dinamis
+                rubrics.forEach(r => {
+                    const score = student.scores[r.key];
                     const selectClass = score !== null 
                         ? 'border-green-300 bg-green-50 text-green-800' 
                         : 'border-gray-300 text-gray-700';
 
-                    // Prepare selected state for options, default is strip "-"
                     let cellOptionsHTML = '<option value="" disabled selected>-</option>';
                     for (let i = max; i >= min; i--) {
                         const selected = score === i ? 'selected' : '';
                         if (score === i) {
-                           // If there's a score, replace the default strip option to unselected
                            cellOptionsHTML = cellOptionsHTML.replace('selected', '');
                         }
                         cellOptionsHTML += `<option value="${i}" ${selected}>${i}</option>`;
@@ -489,7 +612,7 @@
                         <td class="p-4 text-center border-l border-gray-100 bg-blue-50/20">
                             <select 
                                 data-student-id="${student.id}" 
-                                data-rubric="${rKey}"
+                                data-rubric="${r.key}"
                                 class="score-select w-full max-w-[100px] mx-auto block p-2 border rounded-lg text-center font-medium focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-white transition-colors cursor-pointer ${selectClass}"
                             >
                                 ${cellOptionsHTML}
@@ -517,30 +640,42 @@
                 tbody.appendChild(tr);
             });
 
-            // Attach event listeners to new selects
+            // Event listener ke dropdown
             document.querySelectorAll('.score-select').forEach(select => {
                 select.addEventListener('change', handleScoreChange);
             });
         }
 
-        // --- EVENT HANDLERS ---
+        // ==========================================
+        // 4. EVENT HANDLERS & NAVIGATION
+        // ==========================================
 
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Fungsi Login Cepat (Testing Multi-Examiner)
+        function quickLogin(type) {
+            state.currentExaminer = MOCK_EXAMINERS[type];
+            state.students = generateStudentsFor(type);
+            
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
             
-            // Initialize data
+            // Render App
             updateDashboardInfo();
             updateProgressStats();
             renderTable();
-            lucide.createIcons(); // re-init icons for dynamic content
+            lucide.createIcons();
+        }
+
+        // Fungsi manual form (fallback testing)
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            quickLogin('arabic'); // Default ke arabic kalau pakai form ngetik manual
         });
 
         function handleLogout() {
             document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
-            switchTab('home'); // Reset tab
+            switchTab('home'); 
+            state.currentExaminer = null; // Reset
         }
 
         function switchTab(tabName) {
@@ -549,23 +684,18 @@
             const navHome = document.getElementById('nav-home');
             const navPenilaian = document.getElementById('nav-penilaian');
 
-            // Reset nav styles
             const inactiveClass = "text-blue-200 hover:bg-blue-800 hover:text-white";
             const activeClass = "bg-cyan-500 text-white shadow-md";
 
             if (tabName === 'home') {
-                tabHome.classList.remove('hidden');
-                tabHome.classList.add('block');
-                tabPenilaian.classList.remove('block');
-                tabPenilaian.classList.add('hidden');
+                tabHome.classList.remove('hidden'); tabHome.classList.add('block');
+                tabPenilaian.classList.remove('block'); tabPenilaian.classList.add('hidden');
 
                 navHome.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium ${activeClass}`;
                 navPenilaian.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium relative ${inactiveClass}`;
             } else {
-                tabPenilaian.classList.remove('hidden');
-                tabPenilaian.classList.add('block');
-                tabHome.classList.remove('block');
-                tabHome.classList.add('hidden');
+                tabPenilaian.classList.remove('hidden'); tabPenilaian.classList.add('block');
+                tabHome.classList.remove('block'); tabHome.classList.add('hidden');
 
                 navPenilaian.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium relative ${activeClass}`;
                 navHome.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium ${inactiveClass}`;
@@ -577,26 +707,21 @@
             const rubricKey = e.target.dataset.rubric;
             const value = e.target.value === "" ? null : parseInt(e.target.value);
 
-            // Update State
             const studentIndex = state.students.findIndex(s => s.id === studentId);
             if(studentIndex > -1) {
                 state.students[studentIndex].scores[rubricKey] = value;
                 
-                // Update specific row UI elements to avoid full table re-render (better UX)
                 const student = state.students[studentIndex];
                 const avg = calculateAverage(student.scores);
                 const predicate = getPredicate(avg);
                 const isComplete = Object.values(student.scores).every(v => v !== null);
 
-                // Update select styling
                 e.target.className = `score-select w-full max-w-[100px] mx-auto block p-2 border rounded-lg text-center font-medium focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-white transition-colors cursor-pointer ${value !== null ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-300 text-gray-700'}`;
 
-                // Update Average cell
                 const avgEl = document.getElementById(`avg-${studentId}`);
                 avgEl.innerText = avg !== null ? avg : "-";
                 avgEl.className = `font-bold text-lg ${isComplete ? 'text-blue-900' : 'text-gray-400'}`;
 
-                // Update Predicate cell
                 const predContainer = document.getElementById(`pred-container-${studentId}`);
                 if (predicate !== "-") {
                     predContainer.innerHTML = `<span class="inline-flex items-center justify-center w-10 h-10 rounded-xl font-black text-xl ${predicate === 'A' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${predicate}</span>`;
@@ -604,7 +729,6 @@
                     predContainer.innerHTML = `<span class="text-gray-300 font-medium">-</span>`;
                 }
 
-                // Update global progress
                 updateProgressStats();
             }
         }
