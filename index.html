@@ -222,7 +222,7 @@
                                     <div class="flex items-start gap-4">
                                         <div class="bg-green-100 p-3 rounded-xl text-green-700"><i data-lucide="map-pin" class="w-6 h-6"></i></div>
                                         <div>
-                                            <p class="text-sm text-gray-500 font-medium">Lokasi / Cabang</p>
+                                            <p class="text-sm text-gray-500 font-medium">Asal Cabang</p>
                                             <p class="text-gray-900 font-bold" id="info-branch">-</p>
                                         </div>
                                     </div>
@@ -281,7 +281,7 @@
                             <!-- Filter Sesi -->
                             <div class="flex items-center gap-3">
                                 <label for="filter-sesi" class="text-sm font-medium text-cyan-200 whitespace-nowrap">Filter Sesi:</label>
-                                <select id="filter-sesi" onchange="renderTable()" class="bg-blue-800 border border-blue-700 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5 outline-none">
+                                <select id="filter-sesi" onchange="renderTable()" class="bg-blue-800 border border-blue-700 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5 outline-none cursor-pointer">
                                     <option value="all">Semua Sesi</option>
                                     <option value="Sesi 1">Sesi 1</option>
                                     <option value="Sesi 2">Sesi 2</option>
@@ -349,7 +349,7 @@
                 date: "Minggu, 24 Mei 2026",
                 branch: "Al-Wildan Islamic School 15 Bekasi",
                 room: "Ruang Ujian 01",
-                subject: "Arabic Language - Oral Exam",
+                subject: "Arabic",
                 type: "arabic",
                 arrivalTime: "06:45 WIB", // Sudah hadir
             },
@@ -360,7 +360,7 @@
                 date: "Minggu, 24 Mei 2026",
                 branch: "Al-Wildan Islamic School 15 Bekasi",
                 room: "Ruang Ujian 02",
-                subject: "Al-Qur'an Recitation",
+                subject: "Al - Qur'an",
                 type: "quran",
                 arrivalTime: null, // Belum hadir
             },
@@ -371,7 +371,7 @@
                 date: "Minggu, 24 Mei 2026",
                 branch: "Al-Wildan Islamic School 15 Bekasi",
                 room: "Ruang Ujian 03",
-                subject: "English Language",
+                subject: "English",
                 type: "english",
                 arrivalTime: "06:50 WIB", // Sudah hadir
             }
@@ -582,10 +582,10 @@
                 let tdHTML = `
                     <td class="p-4 font-bold text-gray-900">${student.name}</td>
                     <td class="p-4 text-center border-l border-gray-100">
-                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-bold">${student.sesi}</span>
+                        <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-bold whitespace-nowrap text-center">${student.sesi}</span>
                     </td>
                     <td class="p-4 text-center border-l border-gray-100">
-                        <div class="px-3 py-1 rounded-full text-xs font-bold ${getBadgeStyle(student.grading)}">
+                        <div class="inline-block whitespace-nowrap px-3 py-1 rounded-full text-xs font-bold ${getBadgeStyle(student.grading)}">
                             ${student.grading}
                         </div>
                         <div class="text-[10px] text-gray-400 mt-1">Range: ${min}-${max}</div>
@@ -603,6 +603,7 @@
                     for (let i = max; i >= min; i--) {
                         const selected = score === i ? 'selected' : '';
                         if (score === i) {
+                           // If there's a score, replace the default strip option to unselected
                            cellOptionsHTML = cellOptionsHTML.replace('selected', '');
                         }
                         cellOptionsHTML += `<option value="${i}" ${selected}>${i}</option>`;
