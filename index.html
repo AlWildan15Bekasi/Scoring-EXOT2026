@@ -386,12 +386,12 @@
 
         const generateStudentsFor = (type) => {
             return [
-                { id: 1, name: "Ahmad Fathanah", sesi: "Sesi 1", grading: "Excellent 1", scores: generateEmptyScores(type) },
-                { id: 2, name: "Aisyah Putri", sesi: "Sesi 1", grading: "Excellent 2", scores: generateEmptyScores(type) },
-                { id: 3, name: "Bima Arya", sesi: "Sesi 1", grading: "Excellent 3", scores: generateEmptyScores(type) },
-                { id: 4, name: "Cut Mutia", sesi: "Sesi 2", grading: "Excellent 4", scores: generateEmptyScores(type) },
-                { id: 5, name: "Daffa Ramadhan", sesi: "Sesi 2", grading: "Excellent 1", scores: generateEmptyScores(type) },
-                { id: 6, name: "Eka Sari", sesi: "Sesi 2", grading: "Excellent 2", scores: generateEmptyScores(type) },
+                { id: 1, name: "Ahmad Fathanah", kelas: "1 INTER 1", sesi: "Sesi 1", grading: "Excellent 1", scores: generateEmptyScores(type) },
+                { id: 2, name: "Aisyah Putri", kelas: "1 INTER 2", sesi: "Sesi 1", grading: "Excellent 2", scores: generateEmptyScores(type) },
+                { id: 3, name: "Bima Arya", kelas: "2 INTER 1", sesi: "Sesi 1", grading: "Excellent 3", scores: generateEmptyScores(type) },
+                { id: 4, name: "Cut Mutia", kelas: "3 INTER 1", sesi: "Sesi 2", grading: "Excellent 4", scores: generateEmptyScores(type) },
+                { id: 5, name: "Daffa Ramadhan", kelas: "1 INTER 3", sesi: "Sesi 2", grading: "Excellent 1", scores: generateEmptyScores(type) },
+                { id: 6, name: "Eka Sari", kelas: "2 INTER 2", sesi: "Sesi 2", grading: "Excellent 2", scores: generateEmptyScores(type) },
             ];
         };
 
@@ -580,7 +580,10 @@
                 
                 // Kolom NO sudah dihapus, langsung mulai dari Nama Siswa
                 let tdHTML = `
-                    <td class="p-4 font-bold text-gray-900">${student.name}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-gray-900">${student.name}</div>
+                        <div class="text-xs text-gray-500 mt-0.5">${student.kelas}</div>
+                    </td>
                     <td class="p-4 text-center border-l border-gray-100">
                         <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-bold whitespace-nowrap text-center">${student.sesi}</span>
                     </td>
