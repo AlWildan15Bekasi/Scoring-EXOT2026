@@ -100,7 +100,7 @@
 
             <!-- Pesan Error Login -->
             <div id="login-error-msg" class="hidden mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl text-sm font-medium text-center">
-                ID Examiner tidak terdaftar.
+                Username / ID Examiner tidak terdaftar.
             </div>
 
             <!-- Area Scanner QR -->
@@ -129,16 +129,17 @@
 
                 <form id="login-form" class="space-y-4 mb-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Examiner ID</label>
+                        <!-- Label diubah menjadi Username -->
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i data-lucide="user" class="h-5 w-5 text-gray-400"></i>
                             </div>
-                            <input type="text" id="login-id" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="Contoh: EXOT021">
+                            <input type="text" id="login-username" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="Contoh: Safitrianingsih">
                         </div>
                     </div>
-                    <!-- Password disembunyikan/dijadikan opsional jika login pakai ID / QR Code -->
-                    <div class="hidden">
+                    <!-- Password dimunculkan kembali (tidak hidden) -->
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -147,33 +148,15 @@
                             <input type="password" id="login-pass" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="••••••••">
                         </div>
                     </div>
-                    <button id="btn-login-submit" type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg flex justify-center items-center gap-2">
+                    <button id="btn-login-submit" type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg flex justify-center items-center gap-2 mt-2">
                         Masuk ke Portal
                     </button>
                 </form>
-
-                <!-- DUMMY LOGIN BUTTONS UNTUK TESTING -->
-                <div class="pt-6 border-t border-gray-100 hidden">
-                    <p class="text-xs text-gray-500 text-center mb-3 font-medium uppercase tracking-wider">Pilih Role Penguji (Test Bypass)</p>
-                    <div class="grid grid-cols-1 gap-3">
-                        <button onclick="processLogin('EXOT021')" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-sm font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-between shadow-sm">
-                            <span>Syeikh Ahmad R.</span>
-                            <span class="text-[10px] bg-emerald-200 px-2 py-1 rounded-md text-emerald-900 uppercase">Arabic</span>
-                        </button>
-                        <button onclick="processLogin('EXOT013')" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-sm font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-between shadow-sm">
-                            <span>Syeikhoh Manal</span>
-                            <span class="text-[10px] bg-purple-200 px-2 py-1 rounded-md text-purple-900 uppercase">Al-Qur'an</span>
-                        </button>
-                        <button onclick="processLogin('EXOT-ENG')" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-sm font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-between shadow-sm">
-                            <span>Prof. Teacher</span>
-                            <span class="text-[10px] bg-rose-200 px-2 py-1 rounded-md text-rose-900 uppercase">English</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- MAIN DASHBOARD SCREEN (Hidden initially) -->
     <div id="dashboard-screen" class="hidden w-full h-full flex flex-col md:flex-row">
         
         <!-- SIDEBAR -->
@@ -220,6 +203,7 @@
         <main class="flex-grow p-4 md:p-8 overflow-y-auto w-full">
             <div class="max-w-[1400px] mx-auto h-full relative">
                 
+                <!-- HOME TAB -->
                 <div id="tab-home" class="animate-fadeIn space-y-6 block">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="bg-blue-900 p-6 text-white flex justify-between items-center">
@@ -250,7 +234,7 @@
                                             <p class="text-sm text-gray-500 font-medium">Mata Pelajaran Ujian</p>
                                             <p class="text-gray-900 font-bold">
                                                 <span id="info-subject">-</span> 
-                                                <span id="info-role" class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded ml-2">-</span>
+                                                <span id="info-role" class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded ml-2">Examiner</span>
                                             </p>
                                         </div>
                                     </div>
@@ -329,6 +313,7 @@
                     </div>
                 </div>
 
+                <!-- PENILAIAN TAB -->
                 <div id="tab-penilaian" class="hidden animate-fadeIn h-full">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full lg:h-[calc(100vh-4rem)]">
                         
@@ -350,7 +335,7 @@
                             </div>
                         </div>
                         
-                        <!-- Area Tabel -->
+                        <!-- Area Tabel (scrollable) -->
                         <div class="overflow-x-auto p-0 flex-grow bg-white">
                             <table class="w-full text-left border-collapse min-w-max">
                                 <thead class="sticky top-0 bg-white z-10 shadow-sm border-b-2 border-gray-200">
@@ -378,6 +363,7 @@
         </main>
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         // ==========================================
         // 1. API CONFIGURATION & STATE
@@ -424,44 +410,7 @@
         };
 
         // ==========================================
-        // 2. MOCK DATA (PENGGANTI SEMENTARA JIKA API KOSONG)
-        // ==========================================
-        const MOCK_EXAMINERS = {
-            'EXOT021': {
-                ID_Penguji: 'EXOT021', Nama_Penguji: "Ahmad Ridwan Bahrain, S.Sos, M.A",
-                Mata_Uji: "Arabic", Ruang: "Ruang 1", Asal_Cabang: "Al-Wildan Islamic School 13",
-                Jam_Scan: "06:45 WIB" 
-            },
-            'EXOT013': {
-                ID_Penguji: 'EXOT013', Nama_Penguji: "SYAIKHOH MANAL",
-                Mata_Uji: "Al-Qur'an", Ruang: "Ruang 2", Asal_Cabang: "Al-Wildan Islamic School 15 Bekasi",
-                Jam_Scan: null 
-            },
-            'EXOT-ENG': {
-                ID_Penguji: 'EXOT-ENG', Nama_Penguji: "Mr. Ahmad Fadhil",
-                Mata_Uji: "English", Ruang: "Ruang 3", Asal_Cabang: "Al-Wildan Islamic School 15 Bekasi",
-                Jam_Scan: "06:50 WIB" 
-            }
-        };
-
-        const generateEmptyScores = (type) => {
-            let scores = {};
-            MAPEL_CONFIG[type].rubrics.forEach(r => { scores[r.key] = null; });
-            return scores;
-        };
-
-        const generateMockStudents = (type) => {
-            return [
-                { id: "S-EXOT1", name: "Ahmad Fathanah", kelas: "1 INTER 1", sesi: "1", grading: "Excellent 1", scores: generateEmptyScores(type) },
-                { id: "S-EXOT2", name: "Aisyah Putri", kelas: "1 INTER 2", sesi: "1", grading: "Excellent 2", scores: generateEmptyScores(type) },
-                { id: "S-EXOT3", name: "Bima Arya", kelas: "2 INTER 1", sesi: "1", grading: "Excellent 3", scores: generateEmptyScores(type) },
-                { id: "S-EXOT4", name: "Cut Mutia", kelas: "3 INTER 1", sesi: "2", grading: "Excellent 4", scores: generateEmptyScores(type) },
-                { id: "S-EXOT5", name: "Daffa Ramadhan", kelas: "1 INTER 3", sesi: "2", grading: "Excellent 1", scores: generateEmptyScores(type) },
-            ];
-        };
-
-        // ==========================================
-        // 3. UI HELPERS & LOGIC PENILAIAN
+        // 2. UI HELPERS & LOGIC PENILAIAN
         // ==========================================
         
         function showToast(message, type = 'success') {
@@ -532,34 +481,27 @@
         };
 
         // ==========================================
-        // 4. API FETCHING LOGIC (BACKEND INTEGRATION)
+        // 3. API FETCHING LOGIC (BACKEND INTEGRATION)
         // ==========================================
         
-        async function processLogin(id) {
+        async function processLogin(username, password = "") {
             const btnSubmit = document.getElementById('btn-login-submit');
             const errorMsg = document.getElementById('login-error-msg');
+            
+            // Simpan teks original tombol
+            const originalBtnText = btnSubmit.innerHTML;
+            
+            // Ubah tombol jadi mode loading
             btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Memproses...`;
             btnSubmit.disabled = true;
             errorMsg.classList.add('hidden');
 
             try {
-                // FALLBACK TO MOCK DATA IF API_URL IS EMPTY
                 if (API_URL === "") {
-                    showToast("Mode Demo: API URL belum diisi.", "warning");
-                    setTimeout(() => {
-                        if (MOCK_EXAMINERS[id]) {
-                            state.currentExaminer = MOCK_EXAMINERS[id];
-                            state.mapelType = getMapelType(state.currentExaminer.Mata_Uji);
-                            state.students = generateMockStudents(state.mapelType);
-                            
-                            completeLoginProcess();
-                        } else {
-                            errorMsg.innerText = "ID Examiner tidak terdaftar di sistem lokal.";
-                            errorMsg.classList.remove('hidden');
-                            btnSubmit.innerHTML = `Masuk ke Portal`;
-                            btnSubmit.disabled = false;
-                        }
-                    }, 800);
+                    showToast("Mode Demo: API URL belum diisi. Pastikan URL App Script ada.", "warning");
+                    // Reset tombol
+                    btnSubmit.innerHTML = originalBtnText;
+                    btnSubmit.disabled = false;
                     return;
                 }
 
@@ -567,7 +509,7 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ action: 'login_examiner', username: id, password: "" })
+                    body: JSON.stringify({ action: 'login_examiner', username: username, password: password })
                 });
 
                 const res = await response.json();
@@ -578,18 +520,22 @@
                     await fetchStudentsFromBackend(state.currentExaminer.Ruang);
                     completeLoginProcess();
                 } else {
-                    errorMsg.innerText = res.message || "ID tidak ditemukan atau tidak valid.";
+                    // Munculin pesan error jika salah username/password
+                    errorMsg.innerText = res.message || "Username atau Password salah.";
                     errorMsg.classList.remove('hidden');
                 }
             } catch (err) {
-                showToast("Gagal terhubung ke server.", "error");
+                showToast("Gagal terhubung ke server Google.", "error");
                 errorMsg.innerText = "Terjadi kesalahan koneksi server.";
                 errorMsg.classList.remove('hidden');
                 console.error(err);
             } finally {
+                // Selalu kembalikan tombol ke semula jika GAGAL login
+                // (Jika berhasil login, layar akan berganti, jadi aman)
                 if(!state.currentExaminer) {
                     btnSubmit.innerHTML = `Masuk ke Portal`;
                     btnSubmit.disabled = false;
+                    lucide.createIcons(); // render ulang icon gembok dll
                 }
             }
         }
@@ -649,17 +595,9 @@
             lucide.createIcons();
 
             try {
-                if (API_URL === "") {
-                    // MOCK SAVE
-                    setTimeout(() => {
-                        showToast('Data penilaian berhasil disimpan! (Mode Demo)', 'success');
-                        resetSimpanButton();
-                    }, 1500);
-                    return;
-                }
+                if (API_URL === "") return; // safety check
 
-                // --- REAL API SAVE ---
-                // Siapkan payload dengan struktur kolom yang dinamis sesuai mapel
+                // Siapkan payload array murid
                 const payloadStudents = state.students.map(s => {
                     const avg = calculateAverage(s.scores);
                     const pred = getPredicate(avg);
@@ -712,7 +650,7 @@
         }
 
         // ==========================================
-        // 5. RENDERING UI
+        // 4. RENDERING UI
         // ==========================================
 
         function completeLoginProcess() {
@@ -730,7 +668,6 @@
             const data = state.currentExaminer;
             document.getElementById('info-name').innerText = data.Nama_Penguji;
             document.getElementById('info-subject').innerText = data.Mata_Uji;
-            document.getElementById('info-role').innerText = "Examiner";
             document.getElementById('info-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('info-branch').innerText = data.Asal_Cabang || "-";
             document.getElementById('info-room').innerText = data.Ruang || "-";
@@ -833,7 +770,7 @@
             tbody.innerHTML = '';
 
             const filteredStudents = state.students.filter(student => 
-                filterSesi === 'all' || student.sesi == filterSesi
+                filterSesi === 'all' || student.sesi == filterSesi // loose equal biar angka cocok ke string
             );
 
             if (filteredStudents.length === 0) {
@@ -920,7 +857,7 @@
         }
 
         // ==========================================
-        // 6. QR SCANNER & EVENTS
+        // 5. QR SCANNER & EVENTS
         // ==========================================
 
         let html5QrcodeScanner = null;
@@ -939,11 +876,17 @@
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
                     stopScanner();
-                    document.getElementById('login-id').value = decodedText;
-                    showToast('QR Code berhasil dibaca!', 'success');
-                    processLogin(decodedText);
+                    
+                    // Isi form username dengan hasil scan
+                    document.getElementById('login-username').value = decodedText;
+                    document.getElementById('login-pass').value = ''; // Kosongkan pass untuk QR
+                    
+                    showToast('QR Code terbaca! Memproses...', 'info');
+                    
+                    // Langsung panggil login otomatis tanpa perlu password
+                    processLogin(decodedText, "");
                 },
-                (errorMessage) => { /* ignore */ }
+                (errorMessage) => { /* ignore error berisik dari scanner */ }
             ).catch(err => {
                 showToast("Akses kamera ditolak / tidak ditemukan.", "error");
                 stopScanner();
@@ -964,16 +907,19 @@
             }
         }
 
+        // Logic login form manual
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const id = document.getElementById('login-id').value.trim();
-            processLogin(id);
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-pass').value; // Ambil nilai dari input pass
+            processLogin(username, password);
         });
 
         function handleLogout() {
             document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('login-id').value = '';
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-pass').value = '';
             switchTab('home'); 
             state.currentExaminer = null;
             state.students = [];
