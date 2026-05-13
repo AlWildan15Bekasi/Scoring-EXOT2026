@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EXOT 2026 Grading System</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML5 QR Code Scanner -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
@@ -16,9 +19,17 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
         .animate-fadeIn {
             animation: fadeIn 0.4s ease-out forwards;
         }
+        .animate-slideInRight {
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+        
         /* Custom scrollbar for table */
         ::-webkit-scrollbar {
             width: 8px;
@@ -34,6 +45,7 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; 
         }
+        
         /* Arabic Font Utility */
         .font-arabic {
             font-family: 'Amiri', serif;
@@ -43,23 +55,39 @@
         th, td {
             vertical-align: middle !important;
         }
+
+        /* QR Scanner Customizer */
+        #reader {
+            border: none !important;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 2px rgba(6, 182, 212, 0.5); /* cyan ring */
+        }
+        #reader__scan_region {
+            background-color: #f8fafc;
+        }
+        #reader__dashboard_section_csr span {
+            color: #ef4444 !important; /* red error text */
+            font-size: 12px;
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans antialiased overflow-hidden h-screen flex">
+<body class="bg-gray-100 text-gray-800 font-sans antialiased overflow-hidden h-screen flex relative">
 
-    <!-- LOGIN SCREEN -->
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
     <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-gray-50 z-50 overflow-y-auto">
         <!-- Background Ornaments -->
         <div class="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
             <div class="absolute -top-[20%] -right-[10%] w-[70%] h-[70%] bg-gradient-to-br from-cyan-400 to-blue-900 rounded-full opacity-20 blur-3xl"></div>
             <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-gradient-to-tr from-yellow-400 to-transparent rounded-full opacity-20 blur-3xl"></div>
-            
             <svg class="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none">
                 <path fill="#0f172a" fillOpacity="0.05" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,213.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
             </svg>
         </div>
 
-        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-2xl z-10 w-full max-w-md border-t-8 border-blue-900 my-8">
+        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-2xl z-10 w-full max-w-md border-t-8 border-blue-900 my-8 mx-4">
             <div class="text-center mb-6">
                 <h1 class="text-5xl font-extrabold text-blue-900 tracking-tighter mb-2">
                     EXOT<span class="text-cyan-500">2026</span>
@@ -70,52 +98,82 @@
                 </div>
             </div>
 
-            <form id="login-form" class="space-y-4 mb-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Examiner ID</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="user" class="h-5 w-5 text-gray-400"></i>
-                        </div>
-                        <input type="text" id="login-id" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="Enter your ID">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="lock" class="h-5 w-5 text-gray-400"></i>
-                        </div>
-                        <input type="password" id="login-pass" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="••••••••" value="password123">
-                    </div>
-                </div>
-                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg flex justify-center items-center gap-2">
-                    Masuk
-                </button>
-            </form>
+            <!-- Pesan Error Login -->
+            <div id="login-error-msg" class="hidden mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl text-sm font-medium text-center">
+                ID Examiner tidak terdaftar.
+            </div>
 
-            <!-- DUMMY LOGIN BUTTONS UNTUK TESTING -->
-            <div class="pt-6 border-t border-gray-100">
-                <p class="text-xs text-gray-500 text-center mb-3 font-medium uppercase tracking-wider">Pilih Role Penguji (Testing)</p>
-                <div class="grid grid-cols-1 gap-2">
-                    <button onclick="quickLogin('arabic')" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-sm font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-between">
-                        <span>Syeikh Abdulhameed</span>
-                        <span class="text-xs bg-emerald-200 px-2 py-0.5 rounded text-emerald-900">Mapel: Arabic</span>
+            <!-- Area Scanner QR -->
+            <div id="qr-section" class="hidden flex-col items-center justify-center mb-6 animate-fadeIn">
+                <div class="w-full bg-gray-50 p-2 rounded-2xl border-2 border-dashed border-cyan-300">
+                    <div id="reader" class="w-full"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-3 font-medium text-center">Arahkan QR Code ID Card Anda ke kamera.</p>
+                <button type="button" onclick="stopScanner()" class="mt-4 text-rose-600 hover:text-rose-800 text-sm font-bold flex items-center gap-1 transition-colors">
+                    <i data-lucide="x-circle" class="w-4 h-4"></i> Batalkan Scan
+                </button>
+            </div>
+
+            <!-- Area Form Manual -->
+            <div id="login-form-fields" class="animate-fadeIn">
+                <button type="button" onclick="startScanner()" class="w-full mb-6 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 text-cyan-800 font-bold py-3 px-4 rounded-xl transition-all shadow-sm flex justify-center items-center gap-2">
+                    <i data-lucide="qr-code" class="w-5 h-5"></i>
+                    Scan QR Code untuk Login
+                </button>
+
+                <div class="relative flex items-center py-2 mb-6">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-medium uppercase tracking-wider">Atau ketik manual</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <form id="login-form" class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Examiner ID</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="user" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                            <input type="text" id="login-id" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="Contoh: EXOT021">
+                        </div>
+                    </div>
+                    <!-- Password disembunyikan/dijadikan opsional jika login pakai ID / QR Code -->
+                    <div class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="lock" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                            <input type="password" id="login-pass" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <button id="btn-login-submit" type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg flex justify-center items-center gap-2">
+                        Masuk ke Portal
                     </button>
-                    <button onclick="quickLogin('quran')" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-sm font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-between">
-                        <span>Syeikhoh Manal</span>
-                        <span class="text-xs bg-purple-200 px-2 py-0.5 rounded text-purple-900">Mapel: Al-Qur'an</span>
-                    </button>
-                    <button onclick="quickLogin('english')" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-sm font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-between">
-                        <span>Professional Teacher</span>
-                        <span class="text-xs bg-rose-200 px-2 py-0.5 rounded text-rose-900">Mapel: English</span>
-                    </button>
+                </form>
+
+                <!-- DUMMY LOGIN BUTTONS UNTUK TESTING -->
+                <div class="pt-6 border-t border-gray-100 hidden">
+                    <p class="text-xs text-gray-500 text-center mb-3 font-medium uppercase tracking-wider">Pilih Role Penguji (Test Bypass)</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button onclick="processLogin('EXOT021')" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-sm font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-between shadow-sm">
+                            <span>Syeikh Ahmad R.</span>
+                            <span class="text-[10px] bg-emerald-200 px-2 py-1 rounded-md text-emerald-900 uppercase">Arabic</span>
+                        </button>
+                        <button onclick="processLogin('EXOT013')" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-sm font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-between shadow-sm">
+                            <span>Syeikhoh Manal</span>
+                            <span class="text-[10px] bg-purple-200 px-2 py-1 rounded-md text-purple-900 uppercase">Al-Qur'an</span>
+                        </button>
+                        <button onclick="processLogin('EXOT-ENG')" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-sm font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-between shadow-sm">
+                            <span>Prof. Teacher</span>
+                            <span class="text-[10px] bg-rose-200 px-2 py-1 rounded-md text-rose-900 uppercase">English</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD SCREEN (Hidden initially) -->
     <div id="dashboard-screen" class="hidden w-full h-full flex flex-col md:flex-row">
         
         <!-- SIDEBAR -->
@@ -151,7 +209,7 @@
                         <p class="text-xs text-blue-300 truncate" id="info-sidebar-room">Room 01</p>
                     </div>
                 </div>
-                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-950 hover:bg-red-600 hover:text-white text-blue-300 rounded-lg transition-colors text-sm font-medium">
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-950 hover:bg-red-500 hover:text-white text-blue-300 rounded-lg transition-colors text-sm font-medium">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
                     Keluar (Log Out)
                 </button>
@@ -162,7 +220,6 @@
         <main class="flex-grow p-4 md:p-8 overflow-y-auto w-full">
             <div class="max-w-[1400px] mx-auto h-full relative">
                 
-                <!-- HOME TAB -->
                 <div id="tab-home" class="animate-fadeIn space-y-6 block">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="bg-blue-900 p-6 text-white flex justify-between items-center">
@@ -272,10 +329,11 @@
                     </div>
                 </div>
 
-                <!-- PENILAIAN TAB -->
                 <div id="tab-penilaian" class="hidden animate-fadeIn h-full">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full lg:h-[calc(100vh-4rem)]">
-                        <div class="bg-blue-900 p-6 text-white border-b border-blue-800 flex-shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        
+                        <!-- Header Tab Penilaian -->
+                        <div class="bg-blue-900 p-6 text-white flex-shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <h2 class="text-2xl font-bold">Formulir Penilaian Ujian</h2>
                             
                             <!-- Filter Sesi -->
@@ -283,28 +341,34 @@
                                 <label for="filter-sesi" class="text-sm font-medium text-cyan-200 whitespace-nowrap">Filter Sesi:</label>
                                 <select id="filter-sesi" onchange="renderTable()" class="bg-blue-800 border border-blue-700 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5 outline-none cursor-pointer">
                                     <option value="all">Semua Sesi</option>
-                                    <option value="Sesi 1">Sesi 1</option>
-                                    <option value="Sesi 2">Sesi 2</option>
+                                    <option value="1">Sesi 1</option>
+                                    <option value="2">Sesi 2</option>
+                                    <option value="3">Sesi 3</option>
+                                    <option value="4">Sesi 4</option>
+                                    <option value="5">Sesi 5</option>
                                 </select>
                             </div>
                         </div>
                         
-                        <div class="overflow-x-auto p-0 flex-grow">
-                            <table class="w-full text-left border-collapse">
-                                <thead class="sticky top-0 bg-gray-50 z-10 shadow-sm">
-                                    <tr id="table-header-row" class="text-gray-700 text-sm uppercase tracking-wider border-b-2 border-gray-200">
-                                        <!-- Di-inject otomatis lewat JS supaya lebar proporsional & dinamis -->
+                        <!-- Area Tabel -->
+                        <div class="overflow-x-auto p-0 flex-grow bg-white">
+                            <table class="w-full text-left border-collapse min-w-max">
+                                <thead class="sticky top-0 bg-white z-10 shadow-sm border-b-2 border-gray-200">
+                                    <tr id="table-header-row" class="text-gray-700 text-sm uppercase tracking-wider">
+                                        <!-- Di-inject otomatis lewat JS -->
                                     </tr>
                                 </thead>
                                 <tbody id="students-table-body" class="divide-y divide-gray-100">
-                                    <!-- Dynamic Content Goes Here -->
+                                    <!-- Dynamic Content -->
                                 </tbody>
                             </table>
                         </div>
-                        <div class="p-4 border-t bg-gray-50 flex justify-end flex-shrink-0">
-                            <button onclick="alert('Fitur submit akan dihubungkan ke backend database/App Script!')" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                Simpan & Kirim Penilaian
+                        
+                        <!-- Footer Tombol -->
+                        <div class="p-4 border-t bg-gray-50 flex justify-end flex-shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
+                            <button id="btn-submit-nilai" onclick="handleSimpanNilai()" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                                <i data-lucide="check-circle" class="w-5 h-5" id="icon-submit-nilai"></i>
+                                <span id="text-submit-nilai">Simpan & Kirim Penilaian</span>
                             </button>
                         </div>
                     </div>
@@ -314,97 +378,123 @@
         </main>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
         // ==========================================
-        // 1. DATA MASTER & STRUKTUR UNTUK APP SCRIPT
+        // 1. API CONFIGURATION & STATE
         // ==========================================
+        
+        // URL Real Google Apps Script
+        const API_URL = "https://script.google.com/macros/s/AKfycby8lMsDJQ8IuSsiMTPr3hzkjbp6fk9X-RTSGS817d8o2ejYSr0xlgLzeVZ9g2uS1eISoA/exec"; 
 
-        const RUBRIC_TEMPLATES = {
-            english: [
-                { key: 'fluency', label: 'Fluency' },
-                { key: 'pronunciation', label: 'Pronunciation' },
-                { key: 'vocabulary', label: 'Vocabulary' },
-                { key: 'clarity', label: 'Clarity' }
-            ],
-            quran: [
-                { key: 'sikap', label: 'SIKAP', arabic: 'الأداء' },
-                { key: 'tajwid', label: 'TAJWID', arabic: 'التجويد' },
-                { key: 'makhraj', label: 'MAKHRAJ', arabic: 'المخرج' },
-                { key: 'sifat', label: 'SIFAT', arabic: 'الصفة' },
-                { key: 'kelancaran', label: 'KELANCARAN', arabic: 'الحفظ' }
-            ],
-            arabic: [
-                { key: 'qiraah', label: 'Maharah Qira\'ah', arabic: 'مهارة القراءة' },
-                { key: 'kalam', label: 'Maharah Kalam', arabic: 'مهارة الكلام' },
-                { key: 'ada', label: 'Ada\' (Sikap)', arabic: 'الأداء' }
-            ]
-        };
-
-        const MOCK_EXAMINERS = {
-            arabic: {
-                id: 'EXM-ARABIC',
-                name: "Syeikh Prof. Dr. Abdulhameed Al-Yamani",
-                role: "Native Arabic",
-                date: "Minggu, 24 Mei 2026",
-                branch: "Al-Wildan Islamic School 15 Bekasi",
-                room: "Ruang Ujian 01",
-                subject: "Arabic",
-                type: "arabic",
-                arrivalTime: "06:45 WIB", // Sudah hadir
+        const MAPEL_CONFIG = {
+            english: {
+                gradingCol: 'Grading_English',
+                rubrics: [
+                    { key: 'ENG_Fluency', label: 'Fluency' },
+                    { key: 'ENG_Pronunciation', label: 'Pronunciation' },
+                    { key: 'ENG_Vocabulary', label: 'Vocabulary' },
+                    { key: 'ENG_Clarity', label: 'Clarity' }
+                ]
             },
             quran: {
-                id: 'EXM-QURAN',
-                name: "Syeikhoh Manal Al-Yamani",
-                role: "Native Al-Qur'an",
-                date: "Minggu, 24 Mei 2026",
-                branch: "Al-Wildan Islamic School 15 Bekasi",
-                room: "Ruang Ujian 02",
-                subject: "Al - Qur'an",
-                type: "quran",
-                arrivalTime: null, // Belum hadir
+                gradingCol: 'Grading_Quran',
+                rubrics: [
+                    { key: 'QUR_Sikap', label: 'SIKAP', arabic: 'الأداء' },
+                    { key: 'QUR_Tajwid', label: 'TAJWID', arabic: 'التجويد' },
+                    { key: 'QUR_Makhraj', label: 'MAKHRAJ', arabic: 'المخرج' },
+                    { key: 'QUR_Sifat', label: 'SIFAT', arabic: 'الصفة' },
+                    { key: 'QUR_Kelancaran', label: 'KELANCARAN', arabic: 'الحفظ' }
+                ]
             },
-            english: {
-                id: 'EXM-ENG',
-                name: "Mr. Ahmad Fadhil",
-                role: "Professional Teacher",
-                date: "Minggu, 24 Mei 2026",
-                branch: "Al-Wildan Islamic School 15 Bekasi",
-                room: "Ruang Ujian 03",
-                subject: "English",
-                type: "english",
-                arrivalTime: "06:50 WIB", // Sudah hadir
+            arabic: {
+                gradingCol: 'Grading_Arabic',
+                rubrics: [
+                    { key: 'ARB_Qiraah', label: 'Maharah Qira\'ah', arabic: 'مهارة القراءة' },
+                    { key: 'ARB_Kalam', label: 'Maharah Kalam', arabic: 'مهارة الكلام' },
+                    { key: 'ARB_Ada', label: 'Ada\' (Sikap)', arabic: 'الأداء' }
+                ]
             }
         };
 
-        // Template function untuk membuat data murid kosong sesuai dengan mapel penguji
-        const generateEmptyScores = (type) => {
-            let scores = {};
-            RUBRIC_TEMPLATES[type].forEach(r => { scores[r.key] = null; });
-            return scores;
-        };
-
-        const generateStudentsFor = (type) => {
-            return [
-                { id: 1, name: "Ahmad Fathanah", kelas: "1 INTER 1", sesi: "Sesi 1", grading: "Excellent 1", scores: generateEmptyScores(type) },
-                { id: 2, name: "Aisyah Putri", kelas: "1 INTER 2", sesi: "Sesi 1", grading: "Excellent 2", scores: generateEmptyScores(type) },
-                { id: 3, name: "Bima Arya", kelas: "2 INTER 1", sesi: "Sesi 1", grading: "Excellent 3", scores: generateEmptyScores(type) },
-                { id: 4, name: "Cut Mutia", kelas: "3 INTER 1", sesi: "Sesi 2", grading: "Excellent 4", scores: generateEmptyScores(type) },
-                { id: 5, name: "Daffa Ramadhan", kelas: "1 INTER 3", sesi: "Sesi 2", grading: "Excellent 1", scores: generateEmptyScores(type) },
-                { id: 6, name: "Eka Sari", kelas: "2 INTER 2", sesi: "Sesi 2", grading: "Excellent 2", scores: generateEmptyScores(type) },
-            ];
-        };
-
-        // STATE APLIKASI
+        // State Aplikasi Global
         let state = {
-            currentExaminer: null,
+            currentExaminer: null, 
+            mapelType: null, // 'english', 'quran', atau 'arabic'
             students: []
         };
 
+        // ==========================================
+        // 2. MOCK DATA (PENGGANTI SEMENTARA JIKA API KOSONG)
+        // ==========================================
+        const MOCK_EXAMINERS = {
+            'EXOT021': {
+                ID_Penguji: 'EXOT021', Nama_Penguji: "Ahmad Ridwan Bahrain, S.Sos, M.A",
+                Mata_Uji: "Arabic", Ruang: "Ruang 1", Asal_Cabang: "Al-Wildan Islamic School 13",
+                Jam_Scan: "06:45 WIB" 
+            },
+            'EXOT013': {
+                ID_Penguji: 'EXOT013', Nama_Penguji: "SYAIKHOH MANAL",
+                Mata_Uji: "Al-Qur'an", Ruang: "Ruang 2", Asal_Cabang: "Al-Wildan Islamic School 15 Bekasi",
+                Jam_Scan: null 
+            },
+            'EXOT-ENG': {
+                ID_Penguji: 'EXOT-ENG', Nama_Penguji: "Mr. Ahmad Fadhil",
+                Mata_Uji: "English", Ruang: "Ruang 3", Asal_Cabang: "Al-Wildan Islamic School 15 Bekasi",
+                Jam_Scan: "06:50 WIB" 
+            }
+        };
+
+        const generateEmptyScores = (type) => {
+            let scores = {};
+            MAPEL_CONFIG[type].rubrics.forEach(r => { scores[r.key] = null; });
+            return scores;
+        };
+
+        const generateMockStudents = (type) => {
+            return [
+                { id: "S-EXOT1", name: "Ahmad Fathanah", kelas: "1 INTER 1", sesi: "1", grading: "Excellent 1", scores: generateEmptyScores(type) },
+                { id: "S-EXOT2", name: "Aisyah Putri", kelas: "1 INTER 2", sesi: "1", grading: "Excellent 2", scores: generateEmptyScores(type) },
+                { id: "S-EXOT3", name: "Bima Arya", kelas: "2 INTER 1", sesi: "1", grading: "Excellent 3", scores: generateEmptyScores(type) },
+                { id: "S-EXOT4", name: "Cut Mutia", kelas: "3 INTER 1", sesi: "2", grading: "Excellent 4", scores: generateEmptyScores(type) },
+                { id: "S-EXOT5", name: "Daffa Ramadhan", kelas: "1 INTER 3", sesi: "2", grading: "Excellent 1", scores: generateEmptyScores(type) },
+            ];
+        };
 
         // ==========================================
-        // 2. HELPER LOGIC PENILAIAN
+        // 3. UI HELPERS & LOGIC PENILAIAN
         // ==========================================
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : (type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'));
+            const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'x-circle' : 'info');
+
+            toast.className = `animate-slideInRight flex items-center gap-3 px-5 py-4 ${bgColor} text-white font-bold rounded-xl shadow-lg`;
+            toast.innerHTML = `
+                <i data-lucide="${icon}" class="w-5 h-5"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(50px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        const getMapelType = (mataUji) => {
+            if (!mataUji) return 'arabic'; // fallback
+            const mapel = mataUji.toLowerCase();
+            if (mapel.includes('qur')) return 'quran';
+            if (mapel.includes('eng')) return 'english';
+            return 'arabic';
+        };
 
         const getGradingRange = (grading) => {
             switch (grading) {
@@ -417,20 +507,19 @@
         };
 
         const getBadgeStyle = (grading) => {
-            // Menggunakan warna solid yang persis sesuai gambar referensi Excellent
             switch (grading) {
-                case "Excellent 1": return "bg-[#00FF00] text-black border border-black/20 shadow-sm"; 
-                case "Excellent 2": return "bg-[#4A86E8] text-white border border-black/20 shadow-sm"; 
-                case "Excellent 3": return "bg-[#FF9900] text-black border border-black/20 shadow-sm"; 
-                case "Excellent 4": return "bg-[#B7B7B7] text-black border border-black/20 shadow-sm"; 
+                case "Excellent 1": return "bg-[#00FF00] text-black border border-black/10 shadow-sm"; 
+                case "Excellent 2": return "bg-[#4A86E8] text-white border border-black/10 shadow-sm"; 
+                case "Excellent 3": return "bg-[#FF9900] text-black border border-black/10 shadow-sm"; 
+                case "Excellent 4": return "bg-[#B7B7B7] text-black border border-black/10 shadow-sm"; 
                 default: return "bg-gray-100 text-gray-800 border-gray-200";
             }
         };
 
         const calculateAverage = (scores) => {
-            const values = Object.values(scores).filter(v => v !== null);
+            const values = Object.values(scores).filter(v => v !== null && v !== "");
             if (values.length === 0) return null;
-            const sum = values.reduce((a, b) => a + b, 0);
+            const sum = values.reduce((a, b) => a + parseInt(b), 0);
             return (sum / values.length).toFixed(2);
         };
 
@@ -442,31 +531,219 @@
             return "C";
         };
 
+        // ==========================================
+        // 4. API FETCHING LOGIC (BACKEND INTEGRATION)
+        // ==========================================
+        
+        async function processLogin(id) {
+            const btnSubmit = document.getElementById('btn-login-submit');
+            const errorMsg = document.getElementById('login-error-msg');
+            btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Memproses...`;
+            btnSubmit.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            try {
+                // FALLBACK TO MOCK DATA IF API_URL IS EMPTY
+                if (API_URL === "") {
+                    showToast("Mode Demo: API URL belum diisi.", "warning");
+                    setTimeout(() => {
+                        if (MOCK_EXAMINERS[id]) {
+                            state.currentExaminer = MOCK_EXAMINERS[id];
+                            state.mapelType = getMapelType(state.currentExaminer.Mata_Uji);
+                            state.students = generateMockStudents(state.mapelType);
+                            
+                            completeLoginProcess();
+                        } else {
+                            errorMsg.innerText = "ID Examiner tidak terdaftar di sistem lokal.";
+                            errorMsg.classList.remove('hidden');
+                            btnSubmit.innerHTML = `Masuk ke Portal`;
+                            btnSubmit.disabled = false;
+                        }
+                    }, 800);
+                    return;
+                }
+
+                // --- REAL API FETCH ---
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ action: 'login_examiner', username: id, password: "" })
+                });
+
+                const res = await response.json();
+
+                if (res.status === 'success') {
+                    state.currentExaminer = res.data;
+                    state.mapelType = getMapelType(state.currentExaminer.Mata_Uji);
+                    await fetchStudentsFromBackend(state.currentExaminer.Ruang);
+                    completeLoginProcess();
+                } else {
+                    errorMsg.innerText = res.message || "ID tidak ditemukan atau tidak valid.";
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch (err) {
+                showToast("Gagal terhubung ke server.", "error");
+                errorMsg.innerText = "Terjadi kesalahan koneksi server.";
+                errorMsg.classList.remove('hidden');
+                console.error(err);
+            } finally {
+                if(!state.currentExaminer) {
+                    btnSubmit.innerHTML = `Masuk ke Portal`;
+                    btnSubmit.disabled = false;
+                }
+            }
+        }
+
+        async function fetchStudentsFromBackend(ruang) {
+            try {
+                showToast("Mengunduh data siswa...", "info");
+                const response = await fetch(`${API_URL}?action=get_students_for_examiner&ruang=${encodeURIComponent(ruang)}`);
+                const res = await response.json();
+                
+                if (res.status === 'success') {
+                    const config = MAPEL_CONFIG[state.mapelType];
+                    
+                    state.students = res.data.map(row => {
+                        let scoresObj = {};
+                        config.rubrics.forEach(r => {
+                            // Extract existing score from backend if any
+                            scoresObj[r.key] = row[r.key] !== undefined && row[r.key] !== "" ? parseInt(row[r.key]) : null;
+                        });
+                        
+                        return {
+                            id: row.ID_Siswa,
+                            name: row.Nama_Siswa,
+                            kelas: row.Kelas || "Unknown",
+                            sesi: row.Sesi_Ujian,
+                            grading: row[config.gradingCol] || "Excellent 1", // fallback
+                            scores: scoresObj
+                        };
+                    });
+                    showToast("Data siswa berhasil dimuat!", "success");
+                }
+            } catch (err) {
+                showToast("Gagal mengambil data siswa.", "error");
+                console.error(err);
+            }
+        }
+
+        async function handleSimpanNilai() {
+            const btn = document.getElementById('btn-submit-nilai');
+            const icon = document.getElementById('icon-submit-nilai');
+            const text = document.getElementById('text-submit-nilai');
+            
+            // Cek apakah ada murid yang belum dinilai
+            const totalStudents = state.students.length;
+            const gradedStudents = state.students.filter(s => Object.values(s.scores).every(v => v !== null)).length;
+            if (gradedStudents < totalStudents) {
+                showToast("Harap lengkapi semua penilaian siswa sebelum menyimpan!", "error");
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            icon.setAttribute('data-lucide', 'loader-2');
+            icon.classList.add('animate-spin');
+            text.innerText = "Menyimpan ke Server...";
+            lucide.createIcons();
+
+            try {
+                if (API_URL === "") {
+                    // MOCK SAVE
+                    setTimeout(() => {
+                        showToast('Data penilaian berhasil disimpan! (Mode Demo)', 'success');
+                        resetSimpanButton();
+                    }, 1500);
+                    return;
+                }
+
+                // --- REAL API SAVE ---
+                // Siapkan payload dengan struktur kolom yang dinamis sesuai mapel
+                const payloadStudents = state.students.map(s => {
+                    const avg = calculateAverage(s.scores);
+                    const pred = getPredicate(avg);
+                    let obj = { id: s.id, ...s.scores };
+                    
+                    // Tambahkan kolom Rata-rata dan Predikat yang dinamis
+                    if(state.mapelType === 'english') { obj.Rata_Rata_English = avg; obj.Predikat_English = pred; }
+                    if(state.mapelType === 'quran') { obj.Rata_Rata_Quran = avg; obj.Predikat_Quran = pred; }
+                    if(state.mapelType === 'arabic') { obj.Rata_Rata_Arabic = avg; obj.Predikat_Arabic = pred; }
+                    
+                    return obj;
+                });
+
+                const payload = {
+                    action: 'simpan_nilai',
+                    mapelType: state.mapelType,
+                    students: payloadStudents
+                };
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const res = await response.json();
+                
+                if (res.status === 'success') {
+                    showToast('Data penilaian berhasil disimpan ke Database!', 'success');
+                } else {
+                    throw new Error(res.message);
+                }
+            } catch (err) {
+                showToast(`Gagal menyimpan: ${err.message}`, "error");
+            } finally {
+                resetSimpanButton();
+            }
+        }
+
+        function resetSimpanButton() {
+            const btn = document.getElementById('btn-submit-nilai');
+            const icon = document.getElementById('icon-submit-nilai');
+            const text = document.getElementById('text-submit-nilai');
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            icon.setAttribute('data-lucide', 'check-circle');
+            icon.classList.remove('animate-spin');
+            text.innerText = "Simpan & Kirim Penilaian";
+            lucide.createIcons();
+        }
 
         // ==========================================
-        // 3. UI RENDERING & UPDATES
+        // 5. RENDERING UI
         // ==========================================
+
+        function completeLoginProcess() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            
+            updateDashboardInfo();
+            updateProgressStats();
+            renderTable();
+            lucide.createIcons();
+            showToast(`Selamat datang, ${state.currentExaminer.Nama_Penguji.split(',')[0]}`, 'success');
+        }
 
         function updateDashboardInfo() {
             const data = state.currentExaminer;
-            document.getElementById('info-name').innerText = data.name;
-            document.getElementById('info-subject').innerText = data.subject;
-            document.getElementById('info-role').innerText = data.role;
-            document.getElementById('info-date').innerText = data.date;
-            document.getElementById('info-branch').innerText = data.branch;
-            document.getElementById('info-room').innerText = data.room;
+            document.getElementById('info-name').innerText = data.Nama_Penguji;
+            document.getElementById('info-subject').innerText = data.Mata_Uji;
+            document.getElementById('info-role').innerText = "Examiner";
+            document.getElementById('info-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('info-branch').innerText = data.Asal_Cabang || "-";
+            document.getElementById('info-room').innerText = data.Ruang || "-";
             
-            // Sidebar Info
-            document.getElementById('info-sidebar-name').innerText = data.name.split(' ').slice(0,2).join(' ');
-            document.getElementById('info-sidebar-room').innerText = data.room;
-            document.getElementById('info-sidebar-initial').innerText = data.name.substring(0, 2).toUpperCase();
+            document.getElementById('info-sidebar-name').innerText = data.Nama_Penguji.split(' ').slice(0,2).join(' ');
+            document.getElementById('info-sidebar-room').innerText = data.Ruang || "-";
+            document.getElementById('info-sidebar-initial').innerText = data.Nama_Penguji.substring(0, 2).toUpperCase();
 
-            // Logic Kedatangan dan Status Active/Inactive
             const timeEl = document.getElementById('info-time');
             const statusBadgeEl = document.getElementById('status-badge');
 
-            if (data.arrivalTime) {
-                timeEl.innerText = data.arrivalTime;
+            if (data.Jam_Scan && data.Jam_Scan !== "") {
+                timeEl.innerText = data.Jam_Scan;
                 timeEl.className = "font-bold text-green-600";
                 statusBadgeEl.innerHTML = `
                     <span class="block text-xs uppercase tracking-wider text-cyan-200 mb-1">Status</span>
@@ -519,47 +796,44 @@
             }
         }
 
-        // Render Table Header (Dinamis proporsional)
         function renderTableHeader() {
             const theadTr = document.getElementById('table-header-row');
-            const rubrics = RUBRIC_TEMPLATES[state.currentExaminer.type];
+            const config = MAPEL_CONFIG[state.mapelType];
             
             let thHTML = `
-                <th class="p-4 font-bold text-left min-w-[180px]">Nama Siswa</th>
-                <th class="p-4 font-bold text-center border-l border-gray-200 w-24">Sesi</th>
-                <th class="p-4 font-bold text-center border-l border-gray-200 w-36">Grading Siswa</th>
+                <th class="p-5 font-bold text-left min-w-[200px]">Nama Siswa</th>
+                <th class="p-5 font-bold text-center border-l border-gray-200 w-28">Sesi</th>
+                <th class="p-5 font-bold text-center border-l border-gray-200 w-40">Grading Siswa</th>
             `;
             
-            // Kolom rubrik proporsional
-            rubrics.forEach(r => {
+            config.rubrics.forEach(r => {
                 thHTML += `
-                    <th class="p-4 font-bold text-center border-l border-gray-200 bg-blue-50/50 min-w-[120px]">
-                        <div class="flex flex-col items-center justify-center gap-0.5">
-                            ${r.arabic ? `<span class="text-xl font-bold font-arabic tracking-wide text-blue-900">${r.arabic}</span>` : ''}
-                            <span class="${r.arabic ? 'text-[10px] text-gray-500 font-medium' : 'uppercase text-gray-700'}">${r.label}</span>
+                    <th class="p-4 font-bold text-center border-l border-gray-200 bg-blue-50/50 min-w-[140px]">
+                        <div class="flex flex-col items-center justify-center gap-1">
+                            ${r.arabic ? `<span class="text-xl font-bold font-arabic tracking-wide text-blue-900 whitespace-nowrap">${r.arabic}</span>` : ''}
+                            <span class="${r.arabic ? 'text-[11px] text-gray-500 font-bold uppercase tracking-wider' : 'uppercase text-gray-800 tracking-wider whitespace-nowrap'}">${r.label}</span>
                         </div>
                     </th>
                 `;
             });
             
             thHTML += `
-                <th class="p-4 font-bold text-center border-l-2 border-gray-200 w-28">Rata-rata</th>
-                <th class="p-4 font-bold text-center w-28">Predikat</th>
+                <th class="p-5 font-bold text-center border-l-2 border-gray-200 w-32 whitespace-nowrap">Rata-rata</th>
+                <th class="p-5 font-bold text-center w-32 whitespace-nowrap">Predikat</th>
             `;
             
             theadTr.innerHTML = thHTML;
         }
 
-        // Render Isi Tabel
         function renderTable() {
-            renderTableHeader(); // Pastikan header selalu dirender ulang sesuai state mapel
+            renderTableHeader(); 
             
             const tbody = document.getElementById('students-table-body');
             const filterSesi = document.getElementById('filter-sesi').value;
             tbody.innerHTML = '';
 
             const filteredStudents = state.students.filter(student => 
-                filterSesi === 'all' || student.sesi === filterSesi
+                filterSesi === 'all' || student.sesi == filterSesi
             );
 
             if (filteredStudents.length === 0) {
@@ -567,7 +841,7 @@
                 return;
             }
 
-            const rubrics = RUBRIC_TEMPLATES[state.currentExaminer.type];
+            const config = MAPEL_CONFIG[state.mapelType];
 
             filteredStudents.forEach((student) => {
                 const { min, max } = getGradingRange(student.grading);
@@ -578,46 +852,43 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors";
                 
-                // Kolom NO sudah dihapus, langsung mulai dari Nama Siswa
                 let tdHTML = `
-                    <td class="p-4">
-                        <div class="font-bold text-gray-900">${student.name}</div>
-                        <div class="text-xs text-gray-500 mt-0.5">${student.kelas}</div>
+                    <td class="p-5">
+                        <div class="font-bold text-gray-900 whitespace-nowrap">${student.name}</div>
+                        <div class="text-xs text-gray-500 mt-1 font-medium bg-gray-100 px-2 py-0.5 rounded inline-block">Kelas: ${student.kelas || "-"}</div>
                     </td>
-                    <td class="p-4 text-center border-l border-gray-100">
-                        <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-bold whitespace-nowrap text-center">${student.sesi}</span>
+                    <td class="p-5 text-center border-l border-gray-100">
+                        <span class="inline-block px-4 py-1.5 bg-gray-100 text-gray-700 rounded text-xs font-bold whitespace-nowrap text-center">Sesi ${student.sesi}</span>
                     </td>
-                    <td class="p-4 text-center border-l border-gray-100">
-                        <div class="inline-block whitespace-nowrap px-3 py-1 rounded-full text-xs font-bold ${getBadgeStyle(student.grading)}">
+                    <td class="p-5 text-center border-l border-gray-100">
+                        <div class="inline-block whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold ${getBadgeStyle(student.grading)}">
                             ${student.grading}
                         </div>
-                        <div class="text-[10px] text-gray-400 mt-1">Range: ${min}-${max}</div>
+                        <div class="text-[10px] text-gray-400 mt-1.5 font-medium">Range: ${min}-${max}</div>
                     </td>
                 `;
 
-                // Iterasi Rubrik dinamis
-                rubrics.forEach(r => {
+                config.rubrics.forEach(r => {
                     const score = student.scores[r.key];
                     const selectClass = score !== null 
-                        ? 'border-green-300 bg-green-50 text-green-800' 
+                        ? 'border-green-300 bg-green-50 text-green-800 shadow-[0_0_0_2px_rgba(74,222,128,0.2)]' 
                         : 'border-gray-300 text-gray-700';
 
                     let cellOptionsHTML = '<option value="" disabled selected>-</option>';
                     for (let i = max; i >= min; i--) {
                         const selected = score === i ? 'selected' : '';
                         if (score === i) {
-                           // If there's a score, replace the default strip option to unselected
                            cellOptionsHTML = cellOptionsHTML.replace('selected', '');
                         }
                         cellOptionsHTML += `<option value="${i}" ${selected}>${i}</option>`;
                     }
 
                     tdHTML += `
-                        <td class="p-4 text-center border-l border-gray-100 bg-blue-50/20">
+                        <td class="p-4 text-center border-l border-gray-100 bg-blue-50/10">
                             <select 
                                 data-student-id="${student.id}" 
                                 data-rubric="${r.key}"
-                                class="score-select w-full max-w-[100px] mx-auto block p-2 border rounded-lg text-center font-medium focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-white transition-colors cursor-pointer ${selectClass}"
+                                class="score-select w-full max-w-[100px] mx-auto block p-2.5 border rounded-lg text-center font-bold focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-white transition-all cursor-pointer ${selectClass}"
                             >
                                 ${cellOptionsHTML}
                             </select>
@@ -625,17 +896,16 @@
                     `;
                 });
 
-                // Average & Predicate cols
                 tdHTML += `
-                    <td class="p-4 text-center border-l-2 border-gray-100">
-                        <div id="avg-${student.id}" class="font-bold text-lg ${isComplete ? 'text-blue-900' : 'text-gray-400'}">
+                    <td class="p-5 text-center border-l-2 border-gray-100">
+                        <div id="avg-${student.id}" class="font-black text-xl ${isComplete ? 'text-blue-900' : 'text-gray-300'}">
                             ${avg !== null ? avg : "-"}
                         </div>
                     </td>
-                    <td class="p-4 text-center" id="pred-container-${student.id}">
+                    <td class="p-5 text-center" id="pred-container-${student.id}">
                         ${predicate !== "-" 
-                            ? `<span class="inline-flex items-center justify-center w-10 h-10 rounded-xl font-black text-xl ${predicate === 'A' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${predicate}</span>` 
-                            : `<span class="text-gray-300 font-medium">-</span>`
+                            ? `<span class="inline-flex items-center justify-center w-12 h-12 rounded-2xl font-black text-2xl shadow-sm ${predicate === 'A' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">${predicate}</span>` 
+                            : `<span class="text-gray-200 font-bold text-2xl">-</span>`
                         }
                     </td>
                 `;
@@ -644,42 +914,70 @@
                 tbody.appendChild(tr);
             });
 
-            // Event listener ke dropdown
             document.querySelectorAll('.score-select').forEach(select => {
                 select.addEventListener('change', handleScoreChange);
             });
         }
 
         // ==========================================
-        // 4. EVENT HANDLERS & NAVIGATION
+        // 6. QR SCANNER & EVENTS
         // ==========================================
 
-        // Fungsi Login Cepat (Testing Multi-Examiner)
-        function quickLogin(type) {
-            state.currentExaminer = MOCK_EXAMINERS[type];
-            state.students = generateStudentsFor(type);
-            
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('dashboard-screen').classList.remove('hidden');
-            
-            // Render App
-            updateDashboardInfo();
-            updateProgressStats();
-            renderTable();
-            lucide.createIcons();
+        let html5QrcodeScanner = null;
+
+        function startScanner() {
+            document.getElementById('login-form-fields').classList.add('hidden');
+            document.getElementById('qr-section').classList.remove('hidden');
+            document.getElementById('qr-section').classList.add('flex');
+
+            if (!html5QrcodeScanner) {
+                html5QrcodeScanner = new Html5Qrcode("reader");
+            }
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    stopScanner();
+                    document.getElementById('login-id').value = decodedText;
+                    showToast('QR Code berhasil dibaca!', 'success');
+                    processLogin(decodedText);
+                },
+                (errorMessage) => { /* ignore */ }
+            ).catch(err => {
+                showToast("Akses kamera ditolak / tidak ditemukan.", "error");
+                stopScanner();
+            });
         }
 
-        // Fungsi manual form (fallback testing)
+        function stopScanner() {
+            if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('qr-section').classList.add('hidden');
+                    document.getElementById('qr-section').classList.remove('flex');
+                    document.getElementById('login-form-fields').classList.remove('hidden');
+                }).catch(err => console.log(err));
+            } else {
+                document.getElementById('qr-section').classList.add('hidden');
+                document.getElementById('qr-section').classList.remove('flex');
+                document.getElementById('login-form-fields').classList.remove('hidden');
+            }
+        }
+
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            quickLogin('arabic'); // Default ke arabic kalau pakai form ngetik manual
+            const id = document.getElementById('login-id').value.trim();
+            processLogin(id);
         });
 
         function handleLogout() {
             document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-id').value = '';
             switchTab('home'); 
-            state.currentExaminer = null; // Reset
+            state.currentExaminer = null;
+            state.students = [];
+            showToast('Anda berhasil log out.', 'info');
         }
 
         function switchTab(tabName) {
@@ -707,11 +1005,11 @@
         }
 
         function handleScoreChange(e) {
-            const studentId = parseInt(e.target.dataset.studentId);
+            const studentId = e.target.dataset.studentId;
             const rubricKey = e.target.dataset.rubric;
             const value = e.target.value === "" ? null : parseInt(e.target.value);
 
-            const studentIndex = state.students.findIndex(s => s.id === studentId);
+            const studentIndex = state.students.findIndex(s => s.id == studentId);
             if(studentIndex > -1) {
                 state.students[studentIndex].scores[rubricKey] = value;
                 
@@ -720,17 +1018,17 @@
                 const predicate = getPredicate(avg);
                 const isComplete = Object.values(student.scores).every(v => v !== null);
 
-                e.target.className = `score-select w-full max-w-[100px] mx-auto block p-2 border rounded-lg text-center font-medium focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-white transition-colors cursor-pointer ${value !== null ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-300 text-gray-700'}`;
+                e.target.className = `score-select w-full max-w-[100px] mx-auto block p-2.5 border rounded-lg text-center font-bold focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-white transition-all cursor-pointer ${value !== null ? 'border-green-300 bg-green-50 text-green-800 shadow-[0_0_0_2px_rgba(74,222,128,0.2)]' : 'border-gray-300 text-gray-700'}`;
 
                 const avgEl = document.getElementById(`avg-${studentId}`);
                 avgEl.innerText = avg !== null ? avg : "-";
-                avgEl.className = `font-bold text-lg ${isComplete ? 'text-blue-900' : 'text-gray-400'}`;
+                avgEl.className = `font-black text-xl ${isComplete ? 'text-blue-900' : 'text-gray-300'}`;
 
                 const predContainer = document.getElementById(`pred-container-${studentId}`);
                 if (predicate !== "-") {
-                    predContainer.innerHTML = `<span class="inline-flex items-center justify-center w-10 h-10 rounded-xl font-black text-xl ${predicate === 'A' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${predicate}</span>`;
+                    predContainer.innerHTML = `<span class="inline-flex items-center justify-center w-12 h-12 rounded-2xl font-black text-2xl shadow-sm ${predicate === 'A' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">${predicate}</span>`;
                 } else {
-                    predContainer.innerHTML = `<span class="text-gray-300 font-medium">-</span>`;
+                    predContainer.innerHTML = `<span class="text-gray-200 font-bold text-2xl">-</span>`;
                 }
 
                 updateProgressStats();
