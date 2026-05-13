@@ -552,8 +552,8 @@
                     state.students = res.data.map(row => {
                         let scoresObj = {};
                         config.rubrics.forEach(r => {
-                            // Extract existing score from backend if any
-                            scoresObj[r.key] = row[r.key] !== undefined && row[r.key] !== "" ? parseInt(row[r.key]) : null;
+                            let parsedVal = parseInt(row[r.key]);
+                            scoresObj[r.key] = isNaN(parsedVal) ? null : parsedVal;
                         });
                         
                         return {
