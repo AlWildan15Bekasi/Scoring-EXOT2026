@@ -4,17 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EXOT 2026 Grading System</title>
-    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- HTML5 QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -29,7 +26,6 @@
         .animate-slideInRight {
             animation: slideInRight 0.3s ease-out forwards;
         }
-        
         /* Custom scrollbar for table */
         ::-webkit-scrollbar {
             width: 8px;
@@ -45,17 +41,14 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; 
         }
-        
         /* Arabic Font Utility */
         .font-arabic {
             font-family: 'Amiri', serif;
         }
-        
         /* Custom Table Spacing for better look */
         th, td {
             vertical-align: middle !important;
         }
-
         /* QR Scanner Customizer */
         #reader {
             border: none !important;
@@ -73,10 +66,8 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased overflow-hidden h-screen flex relative">
-
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
-
     <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-gray-50 z-50 overflow-y-auto">
         <!-- Background Ornaments -->
         <div class="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
@@ -86,7 +77,6 @@
                 <path fill="#0f172a" fillOpacity="0.05" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,213.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
             </svg>
         </div>
-
         <div class="bg-white p-8 md:p-10 rounded-3xl shadow-2xl z-10 w-full max-w-md border-t-8 border-blue-900 my-8 mx-4">
             <div class="text-center mb-6">
                 <h1 class="text-5xl font-extrabold text-blue-900 tracking-tighter mb-2">
@@ -97,12 +87,10 @@
                     Examiner Portal
                 </div>
             </div>
-
             <!-- Pesan Error Login -->
             <div id="login-error-msg" class="hidden mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl text-sm font-medium text-center">
                 Username / ID Examiner tidak terdaftar.
             </div>
-
             <!-- Area Scanner QR -->
             <div id="qr-section" class="hidden flex-col items-center justify-center mb-6 animate-fadeIn">
                 <div class="w-full bg-gray-50 p-2 rounded-2xl border-2 border-dashed border-cyan-300">
@@ -113,20 +101,17 @@
                     <i data-lucide="x-circle" class="w-4 h-4"></i> Batalkan Scan
                 </button>
             </div>
-
             <!-- Area Form Manual -->
             <div id="login-form-fields" class="animate-fadeIn">
                 <button type="button" onclick="startScanner()" class="w-full mb-6 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 text-cyan-800 font-bold py-3 px-4 rounded-xl transition-all shadow-sm flex justify-center items-center gap-2">
                     <i data-lucide="qr-code" class="w-5 h-5"></i>
                     Scan QR Code untuk Login
                 </button>
-
                 <div class="relative flex items-center py-2 mb-6">
                     <div class="flex-grow border-t border-gray-200"></div>
                     <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-medium uppercase tracking-wider">Atau ketik manual</span>
                     <div class="flex-grow border-t border-gray-200"></div>
                 </div>
-
                 <form id="login-form" class="space-y-4 mb-6">
                     <div>
                         <!-- Label diubah menjadi Username -->
@@ -155,10 +140,8 @@
             </div>
         </div>
     </div>
-
     <!-- MAIN DASHBOARD SCREEN (Hidden initially) -->
     <div id="dashboard-screen" class="hidden w-full h-full flex flex-col md:flex-row">
-        
         <!-- SIDEBAR -->
         <aside class="w-full md:w-64 bg-blue-900 text-white flex flex-col shadow-2xl z-20 flex-shrink-0">
             <div class="p-6 border-b border-blue-800 flex items-center gap-3">
@@ -170,20 +153,17 @@
                     <p class="text-[10px] text-blue-300 uppercase tracking-widest mt-1">Al Wildan Islamic School 15 Bekasi</p>
                 </div>
             </div>
-
             <nav class="flex-grow p-4 space-y-2">
                 <button onclick="switchTab('home')" id="nav-home" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium bg-cyan-500 text-white shadow-md">
                     <i data-lucide="home" class="w-5 h-5"></i>
                     Dashboard Home
                 </button>
-                
                 <button onclick="switchTab('penilaian')" id="nav-penilaian" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium relative text-blue-200 hover:bg-blue-800 hover:text-white">
                     <i data-lucide="file-text" class="w-5 h-5"></i>
                     Isi Penilaian
                     <span id="nav-pending-badge" class="absolute right-4 bg-yellow-500 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full hidden"></span>
                 </button>
             </nav>
-
             <div class="p-4 border-t border-blue-800">
                 <div class="flex items-center gap-3 mb-4 px-2">
                     <div class="w-10 h-10 rounded-full bg-blue-700 flex justify-center items-center font-bold text-xs" id="info-sidebar-initial">EX</div>
@@ -198,11 +178,9 @@
                 </button>
             </div>
         </aside>
-
         <!-- MAIN CONTENT -->
         <main class="flex-grow p-4 md:p-8 overflow-y-auto w-full">
             <div class="max-w-[1400px] mx-auto h-full relative">
-                
                 <!-- HOME TAB -->
                 <div id="tab-home" class="animate-fadeIn space-y-6 block">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -215,7 +193,6 @@
                                 <!-- Status will be injected by JS -->
                             </div>
                         </div>
-                        
                         <div class="p-6">
                             <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Informasi Jadwal & Penugasan</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -233,7 +210,7 @@
                                         <div>
                                             <p class="text-sm text-gray-500 font-medium">Mata Pelajaran Ujian</p>
                                             <p class="text-gray-900 font-bold">
-                                                <span id="info-subject">-</span> 
+                                                <span id="info-subject">-</span>
                                                 <span id="info-role" class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded ml-2">Examiner</span>
                                             </p>
                                         </div>
@@ -246,7 +223,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <!-- Kolom Kanan -->
                                 <div class="space-y-4">
                                     <div class="flex items-start gap-4">
@@ -255,7 +231,7 @@
                                             <p class="text-sm text-gray-500 font-medium">Waktu Kedatangan</p>
                                             <p class="text-gray-900 font-bold" id="info-date">-</p>
                                             <p class="text-sm flex items-center gap-1 mt-1">
-                                                <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i> 
+                                                <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
                                                 <span id="info-time" class="font-bold text-red-500">Belum Hadir</span>
                                             </p>
                                         </div>
@@ -271,7 +247,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 lg:col-span-2">
                             <h3 class="text-lg font-bold text-gray-800 mb-4">Progress Penilaian</h3>
@@ -282,7 +257,6 @@
                             <div class="w-full bg-gray-200 rounded-full h-4 mb-6 overflow-hidden">
                                 <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 to-blue-600 h-4 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
                             </div>
-                            
                             <div id="alert-box" class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex gap-3 items-start hidden">
                                 <i data-lucide="alert-circle" class="w-6 h-6 text-yellow-600 flex-shrink-0"></i>
                                 <div>
@@ -290,7 +264,6 @@
                                     <p class="text-yellow-700 text-sm mt-1">Anda memiliki <strong id="alert-pending">0 siswa</strong> yang belum dinilai secara lengkap. Harap selesaikan penilaian sebelum sesi berakhir.</p>
                                 </div>
                             </div>
-                            
                             <div id="success-box" class="bg-green-50 border border-green-200 rounded-xl p-4 flex gap-3 items-start hidden">
                                 <i data-lucide="check-circle" class="w-6 h-6 text-green-600 flex-shrink-0"></i>
                                 <div>
@@ -299,7 +272,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center text-center">
                             <div class="w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center mb-4 border-4 border-blue-100">
                                 <span class="text-4xl font-black text-blue-900" id="stat-big-pending">0</span>
@@ -312,29 +284,21 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- PENILAIAN TAB -->
                 <div id="tab-penilaian" class="hidden animate-fadeIn h-full">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full lg:h-[calc(100vh-4rem)]">
-                        
                         <!-- Header Tab Penilaian -->
                         <div class="bg-blue-900 p-6 text-white flex-shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <h2 class="text-2xl font-bold">Formulir Penilaian Ujian</h2>
-                            
                             <!-- Filter Sesi -->
                             <div class="flex items-center gap-3">
                                 <label for="filter-sesi" class="text-sm font-medium text-cyan-200 whitespace-nowrap">Filter Sesi:</label>
                                 <select id="filter-sesi" onchange="renderTable()" class="bg-blue-800 border border-blue-700 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5 outline-none cursor-pointer">
                                     <option value="all">Semua Sesi</option>
-                                    <option value="1">Sesi 1</option>
-                                    <option value="2">Sesi 2</option>
-                                    <option value="3">Sesi 3</option>
-                                    <option value="4">Sesi 4</option>
-                                    <option value="5">Sesi 5</option>
+                                    <!-- Sesi di-generate otomatis oleh JavaScript -->
                                 </select>
                             </div>
                         </div>
-                        
                         <!-- Area Tabel (scrollable) -->
                         <div class="overflow-x-auto p-0 flex-grow bg-white">
                             <table class="w-full text-left border-collapse min-w-max">
@@ -348,7 +312,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        
                         <!-- Footer Tombol -->
                         <div class="p-4 border-t bg-gray-50 flex justify-end flex-shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
                             <button id="btn-submit-nilai" onclick="handleSimpanNilai()" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 transition-colors">
@@ -358,20 +321,16 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
-
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // ==========================================
         // 1. API CONFIGURATION & STATE
         // ==========================================
-        
         // URL Real Google Apps Script
         const API_URL = "https://script.google.com/macros/s/AKfycby8lMsDJQ8IuSsiMTPr3hzkjbp6fk9X-RTSGS817d8o2ejYSr0xlgLzeVZ9g2uS1eISoA/exec"; 
-
         const MAPEL_CONFIG = {
             english: {
                 gradingCol: 'Grading_English',
@@ -401,34 +360,27 @@
                 ]
             }
         };
-
         // State Aplikasi Global
         let state = {
             currentExaminer: null, 
             mapelType: null, // 'english', 'quran', atau 'arabic'
             students: []
         };
-
         // ==========================================
         // 2. UI HELPERS & LOGIC PENILAIAN
         // ==========================================
-        
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : (type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'));
             const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'x-circle' : 'info');
-
             toast.className = `animate-slideInRight flex items-center gap-3 px-5 py-4 ${bgColor} text-white font-bold rounded-xl shadow-lg`;
             toast.innerHTML = `
                 <i data-lucide="${icon}" class="w-5 h-5"></i>
                 <span>${message}</span>
             `;
-            
             container.appendChild(toast);
             lucide.createIcons();
-
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(50px)';
@@ -436,7 +388,6 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
         }
-
         const getMapelType = (mataUji) => {
             if (!mataUji) return 'arabic'; // fallback
             const mapel = mataUji.toLowerCase();
@@ -444,7 +395,6 @@
             if (mapel.includes('eng')) return 'english';
             return 'arabic';
         };
-
         const getGradingRange = (grading) => {
             switch (grading) {
                 case "Excellent 1": return { min: 95, max: 100 };
@@ -454,7 +404,6 @@
                 default: return { min: 0, max: 100 };
             }
         };
-
         const getBadgeStyle = (grading) => {
             switch (grading) {
                 case "Excellent 1": return "bg-[#00FF00] text-black border border-black/10 shadow-sm"; 
@@ -464,14 +413,12 @@
                 default: return "bg-gray-100 text-gray-800 border-gray-200";
             }
         };
-
         const calculateAverage = (scores) => {
             const values = Object.values(scores).filter(v => v !== null && v !== "");
             if (values.length === 0) return null;
             const sum = values.reduce((a, b) => a + parseInt(b), 0);
             return (sum / values.length).toFixed(2);
         };
-
         const getPredicate = (average) => {
             if (average === null) return "-";
             const num = parseFloat(average);
@@ -479,23 +426,18 @@
             if (num >= 85) return "B";
             return "C";
         };
-
         // ==========================================
         // 3. API FETCHING LOGIC (BACKEND INTEGRATION)
         // ==========================================
-        
         async function processLogin(username, password = "") {
             const btnSubmit = document.getElementById('btn-login-submit');
             const errorMsg = document.getElementById('login-error-msg');
-            
             // Simpan teks original tombol
             const originalBtnText = btnSubmit.innerHTML;
-            
             // Ubah tombol jadi mode loading
             btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Memproses...`;
             btnSubmit.disabled = true;
             errorMsg.classList.add('hidden');
-
             try {
                 if (API_URL === "") {
                     showToast("Mode Demo: API URL belum diisi. Pastikan URL App Script ada.", "warning");
@@ -504,16 +446,13 @@
                     btnSubmit.disabled = false;
                     return;
                 }
-
                 // --- REAL API FETCH ---
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({ action: 'login_examiner', username: username, password: password })
                 });
-
                 const res = await response.json();
-
                 if (res.status === 'success') {
                     state.currentExaminer = res.data;
                     state.mapelType = getMapelType(state.currentExaminer.Mata_Uji);
@@ -539,16 +478,13 @@
                 }
             }
         }
-
         async function fetchStudentsFromBackend(ruang) {
             try {
                 showToast("Mengunduh data siswa...", "info");
                 const response = await fetch(`${API_URL}?action=get_students_for_examiner&ruang=${encodeURIComponent(ruang)}`);
                 const res = await response.json();
-                
                 if (res.status === 'success') {
                     const config = MAPEL_CONFIG[state.mapelType];
-                    
                     state.students = res.data.map(row => {
                         let scoresObj = {};
                         config.rubrics.forEach(r => {
@@ -557,7 +493,6 @@
                             let parsedVal = parseInt(row[r.key]);
                             scoresObj[r.key] = isNaN(parsedVal) ? null : parsedVal;
                         });
-                        
                         return {
                             id: row.ID_Siswa,
                             name: row.Nama_Siswa,
@@ -567,6 +502,9 @@
                             scores: scoresObj
                         };
                     });
+
+                    updateSesiFilter(); // Update dropdown filter dinamis berdasarkan data siswa
+
                     showToast("Data siswa berhasil dimuat!", "success");
                 }
             } catch (err) {
@@ -574,15 +512,12 @@
                 console.error(err);
             }
         }
-
         async function handleSimpanNilai() {
             const btn = document.getElementById('btn-submit-nilai');
             const icon = document.getElementById('icon-submit-nilai');
             const text = document.getElementById('text-submit-nilai');
-            
             // VALIDASI DIHAPUS: Sekarang bisa simpan (nyicil) berapapun siswa yang udah dinilai.
             // (Blok kode 'if (gradedStudents < totalStudents)' sudah diamputasi)
-
             // Loading state
             btn.disabled = true;
             btn.classList.add('opacity-70', 'cursor-not-allowed');
@@ -590,38 +525,30 @@
             icon.classList.add('animate-spin');
             text.innerText = "Menyimpan ke Server...";
             lucide.createIcons();
-
             try {
                 if (API_URL === "") return; // safety check
-
                 // Siapkan payload array murid
                 const payloadStudents = state.students.map(s => {
                     const avg = calculateAverage(s.scores);
                     const pred = getPredicate(avg);
                     let obj = { id: s.id, ...s.scores };
-                    
                     // Tambahkan kolom Rata-rata dan Predikat yang dinamis
                     if(state.mapelType === 'english') { obj.Rata_Rata_English = avg; obj.Predikat_English = pred; }
                     if(state.mapelType === 'quran') { obj.Rata_Rata_Quran = avg; obj.Predikat_Quran = pred; }
                     if(state.mapelType === 'arabic') { obj.Rata_Rata_Arabic = avg; obj.Predikat_Arabic = pred; }
-                    
                     return obj;
                 });
-
                 const payload = {
                     action: 'simpan_nilai',
                     mapelType: state.mapelType,
                     students: payloadStudents
                 };
-
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 });
-                
                 const res = await response.json();
-                
                 if (res.status === 'success') {
                     showToast('Data penilaian berhasil disimpan ke Database!', 'success');
                 } else {
@@ -633,7 +560,6 @@
                 resetSimpanButton();
             }
         }
-
         function resetSimpanButton() {
             const btn = document.getElementById('btn-submit-nilai');
             const icon = document.getElementById('icon-submit-nilai');
@@ -645,22 +571,18 @@
             text.innerText = "Simpan & Kirim Penilaian";
             lucide.createIcons();
         }
-
         // ==========================================
         // 4. RENDERING UI
         // ==========================================
-
         function completeLoginProcess() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
-            
             updateDashboardInfo();
             updateProgressStats();
             renderTable();
             lucide.createIcons();
             showToast(`Selamat datang, ${state.currentExaminer.Nama_Penguji.split(',')[0]}`, 'success');
         }
-
         function updateDashboardInfo() {
             const data = state.currentExaminer;
             document.getElementById('info-name').innerText = data.Nama_Penguji;
@@ -668,14 +590,11 @@
             document.getElementById('info-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('info-branch').innerText = data.Asal_Cabang || "-";
             document.getElementById('info-room').innerText = data.Ruang || "-";
-            
             document.getElementById('info-sidebar-name').innerText = data.Nama_Penguji.split(' ').slice(0,2).join(' ');
             document.getElementById('info-sidebar-room').innerText = data.Ruang || "-";
             document.getElementById('info-sidebar-initial').innerText = data.Nama_Penguji.substring(0, 2).toUpperCase();
-
             const timeEl = document.getElementById('info-time');
             const statusBadgeEl = document.getElementById('status-badge');
-
             if (data.Jam_Scan && data.Jam_Scan !== "") {
                 timeEl.innerText = data.Jam_Scan;
                 timeEl.className = "font-bold text-green-600";
@@ -696,22 +615,18 @@
                 `;
             }
         }
-
         function updateProgressStats() {
             const totalStudents = state.students.length;
             const gradedStudents = state.students.filter(s => Object.values(s.scores).every(v => v !== null)).length;
             const pendingStudents = totalStudents - gradedStudents;
             const progressPercentage = totalStudents === 0 ? 0 : Math.round((gradedStudents / totalStudents) * 100);
-
             document.getElementById('stat-total').innerText = totalStudents;
             document.getElementById('stat-completed').innerText = gradedStudents;
             document.getElementById('stat-percentage').innerText = `${progressPercentage}%`;
             document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
             document.getElementById('stat-big-pending').innerText = pendingStudents;
-
             const alertBox = document.getElementById('alert-box');
             const successBox = document.getElementById('success-box');
-            
             if (pendingStudents > 0) {
                 alertBox.classList.remove('hidden');
                 successBox.classList.add('hidden');
@@ -720,7 +635,6 @@
                 alertBox.classList.add('hidden');
                 successBox.classList.remove('hidden');
             }
-
             const badge = document.getElementById('nav-pending-badge');
             if (pendingStudents > 0) {
                 badge.innerText = pendingStudents;
@@ -730,17 +644,35 @@
             }
         }
 
+        function updateSesiFilter() {
+            const filterSelect = document.getElementById('filter-sesi');
+            
+            // Ekstrak sesi unik dari data siswa, hilangkan nilai kosong, lalu urutkan angkanya
+            const uniqueSesi = [...new Set(state.students.map(s => s.sesi))]
+                .filter(sesi => sesi !== null && sesi !== undefined && sesi !== "")
+                .sort((a, b) => parseInt(a) - parseInt(b));
+
+            // Buat opsi HTML mulai dari "Semua Sesi"
+            let html = `<option value="all">Semua Sesi</option>`;
+            
+            // Tambahkan sesi yang didapat dari data
+            uniqueSesi.forEach(sesi => {
+                html += `<option value="${sesi}">Sesi ${sesi}</option>`;
+            });
+
+            // Timpa isi HTML di dropdown dengan yang baru
+            filterSelect.innerHTML = html;
+        }
+
         function renderTableHeader() {
             const theadTr = document.getElementById('table-header-row');
             const config = MAPEL_CONFIG[state.mapelType];
-            
             // Padding dan ukuran font dikecilkan untuk efek "Zoom Out"
             let thHTML = `
                 <th class="p-3 text-xs font-bold text-left min-w-[160px]">Nama Siswa</th>
                 <th class="p-3 text-xs font-bold text-center border-l border-gray-200 w-20">Sesi</th>
                 <th class="p-3 text-xs font-bold text-center border-l border-gray-200 w-32">Grading</th>
             `;
-            
             config.rubrics.forEach(r => {
                 thHTML += `
                     <th class="p-2 text-xs font-bold text-center border-l border-gray-200 bg-blue-50/50 min-w-[110px]">
@@ -751,42 +683,32 @@
                     </th>
                 `;
             });
-            
             thHTML += `
                 <th class="p-3 text-xs font-bold text-center border-l-2 border-gray-200 w-24 whitespace-nowrap">Rata-rata</th>
                 <th class="p-3 text-xs font-bold text-center w-24 whitespace-nowrap">Predikat</th>
             `;
-            
             theadTr.innerHTML = thHTML;
         }
-
         function renderTable() {
             renderTableHeader(); 
-            
             const tbody = document.getElementById('students-table-body');
             const filterSesi = document.getElementById('filter-sesi').value;
             tbody.innerHTML = '';
-
             const filteredStudents = state.students.filter(student => 
                 filterSesi === 'all' || student.sesi == filterSesi // loose equal biar angka cocok ke string
             );
-
             if (filteredStudents.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-gray-500 font-medium">Tidak ada data siswa untuk sesi ini.</td></tr>`;
                 return;
             }
-
             const config = MAPEL_CONFIG[state.mapelType];
-
             filteredStudents.forEach((student) => {
                 const { min, max } = getGradingRange(student.grading);
                 const avg = calculateAverage(student.scores);
                 const predicate = getPredicate(avg);
                 const isComplete = Object.values(student.scores).every(v => v !== null);
-
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors border-b border-gray-100";
-                
                 // Padding dan ukuran text/badge dikecilkan
                 let tdHTML = `
                     <td class="p-3">
@@ -803,13 +725,11 @@
                         <div class="text-[9px] text-gray-400 mt-1 font-medium">Range: ${min}-${max}</div>
                     </td>
                 `;
-
                 config.rubrics.forEach(r => {
                     const score = student.scores[r.key];
                     const selectClass = score !== null 
                         ? 'border-green-300 bg-green-50 text-green-800 shadow-[0_0_0_1px_rgba(74,222,128,0.2)]' 
                         : 'border-gray-300 text-gray-700';
-
                     let cellOptionsHTML = '<option value="" disabled selected>-</option>';
                     for (let i = max; i >= min; i--) {
                         const selected = score === i ? 'selected' : '';
@@ -818,7 +738,6 @@
                         }
                         cellOptionsHTML += `<option value="${i}" ${selected}>${i}</option>`;
                     }
-
                     tdHTML += `
                         <td class="p-2 text-center border-l border-gray-100 bg-blue-50/10">
                             <select 
@@ -831,7 +750,6 @@
                         </td>
                     `;
                 });
-
                 tdHTML += `
                     <td class="p-3 text-center border-l-2 border-gray-100">
                         <div id="avg-${student.id}" class="font-black text-lg ${isComplete ? 'text-blue-900' : 'text-gray-300'}">
@@ -845,43 +763,33 @@
                         }
                     </td>
                 `;
-
                 tr.innerHTML = tdHTML;
                 tbody.appendChild(tr);
             });
-
             document.querySelectorAll('.score-select').forEach(select => {
                 select.addEventListener('change', handleScoreChange);
             });
         }
-
         // ==========================================
         // 5. QR SCANNER & EVENTS
         // ==========================================
-
         let html5QrcodeScanner = null;
-
         function startScanner() {
             document.getElementById('login-form-fields').classList.add('hidden');
             document.getElementById('qr-section').classList.remove('hidden');
             document.getElementById('qr-section').classList.add('flex');
-
             if (!html5QrcodeScanner) {
                 html5QrcodeScanner = new Html5Qrcode("reader");
             }
-
             html5QrcodeScanner.start(
                 { facingMode: "environment" }, 
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
                     stopScanner();
-                    
                     // Isi form username dengan hasil scan
                     document.getElementById('login-username').value = decodedText;
                     document.getElementById('login-pass').value = ''; // Kosongkan pass untuk QR
-                    
                     showToast('QR Code terbaca! Memproses...', 'info');
-                    
                     // Langsung panggil login otomatis tanpa perlu password
                     processLogin(decodedText, "");
                 },
@@ -891,7 +799,6 @@
                 stopScanner();
             });
         }
-
         function stopScanner() {
             if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
                 html5QrcodeScanner.stop().then(() => {
@@ -905,7 +812,6 @@
                 document.getElementById('login-form-fields').classList.remove('hidden');
             }
         }
-
         // Logic login form manual
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -913,7 +819,6 @@
             const password = document.getElementById('login-pass').value; // Ambil nilai dari input pass
             processLogin(username, password);
         });
-
         function handleLogout() {
             document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
@@ -924,65 +829,51 @@
             state.students = [];
             showToast('Anda berhasil log out.', 'info');
         }
-
         function switchTab(tabName) {
             const tabHome = document.getElementById('tab-home');
             const tabPenilaian = document.getElementById('tab-penilaian');
             const navHome = document.getElementById('nav-home');
             const navPenilaian = document.getElementById('nav-penilaian');
-
             const inactiveClass = "text-blue-200 hover:bg-blue-800 hover:text-white";
             const activeClass = "bg-cyan-500 text-white shadow-md";
-
             if (tabName === 'home') {
                 tabHome.classList.remove('hidden'); tabHome.classList.add('block');
                 tabPenilaian.classList.remove('block'); tabPenilaian.classList.add('hidden');
-
                 navHome.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium ${activeClass}`;
                 navPenilaian.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium relative ${inactiveClass}`;
             } else {
                 tabPenilaian.classList.remove('hidden'); tabPenilaian.classList.add('block');
                 tabHome.classList.remove('block'); tabHome.classList.add('hidden');
-
                 navPenilaian.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium relative ${activeClass}`;
                 navHome.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium ${inactiveClass}`;
             }
         }
-
         function handleScoreChange(e) {
             const studentId = e.target.dataset.studentId;
             const rubricKey = e.target.dataset.rubric;
             const value = e.target.value === "" ? null : parseInt(e.target.value);
-
             const studentIndex = state.students.findIndex(s => s.id == studentId);
             if(studentIndex > -1) {
                 state.students[studentIndex].scores[rubricKey] = value;
-                
                 const student = state.students[studentIndex];
                 const avg = calculateAverage(student.scores);
                 const predicate = getPredicate(avg);
                 const isComplete = Object.values(student.scores).every(v => v !== null);
-
                 e.target.className = `score-select w-full max-w-[100px] mx-auto block p-2.5 border rounded-lg text-center font-bold focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-white transition-all cursor-pointer ${value !== null ? 'border-green-300 bg-green-50 text-green-800 shadow-[0_0_0_2px_rgba(74,222,128,0.2)]' : 'border-gray-300 text-gray-700'}`;
-
                 const avgEl = document.getElementById(`avg-${studentId}`);
                 avgEl.innerText = avg !== null ? avg : "-";
                 avgEl.className = `font-black text-xl ${isComplete ? 'text-blue-900' : 'text-gray-300'}`;
-
                 const predContainer = document.getElementById(`pred-container-${studentId}`);
                 if (predicate !== "-") {
                     predContainer.innerHTML = `<span class="inline-flex items-center justify-center w-12 h-12 rounded-2xl font-black text-2xl shadow-sm ${predicate === 'A' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">${predicate}</span>`;
                 } else {
                     predContainer.innerHTML = `<span class="text-gray-200 font-bold text-2xl">-</span>`;
                 }
-
                 updateProgressStats();
             }
         }
-
         // Initialize icons on load
         lucide.createIcons();
-
     </script>
 </body>
 </html>
